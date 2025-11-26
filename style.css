@@ -1,121 +1,97 @@
-:root{
-  --page-width:210mm;
-  --page-padding:18mm;
-  --left-col-w:38%;
-  --right-col-w:62%;
-  --divider-color:#bfbfbf;
-  --accent:#222;
+body {
+    font-family: Arial;
+    background: #f2f2f2;
+    padding: 20px;
 }
 
-body{
-  font-family: 'Montserrat', system-ui, -apple-system, "Segoe UI", Roboto, Arial;
-  background:#f4f6f8;
-  color:#111;
+/* input area */
+.input-container {
+    background: white;
+    padding: 20px;
+    max-width: 800px;
+    margin: auto;
+    border-radius: 10px;
 }
 
-/* UI container styling */
-.container { max-width:1100px; }
-
-/* Printable prescription paper */
-.prescription-paper{
-  width:var(--page-width);
-  min-height:297mm;
-  padding:var(--page-padding);
-  margin:20px auto;
-  background:#fff;
-  box-shadow:0 2px 8px rgba(0,0,0,0.06);
-  box-sizing:border-box;
-  position:relative;
-  color:#000;
+textarea, input {
+    width: 100%;
+    padding: 10px;
+    margin: 5px 0 15px;
 }
 
-/* header layout */
-.header-row{
-  display:flex;
-  justify-content:space-between;
-  align-items:flex-start;
-  gap:12px;
-  padding-bottom:8px;
-}
-.header-left { width:60%; display:flex; gap:12px; align-items:flex-start; }
-.header-right { width:38%; text-align:right; font-size:11pt; }
-.header-text { white-space:pre-line; font-size:11pt; }
-
-/* logo */
-.clinic-logo{ max-width:110px; max-height:110px; object-fit:contain; margin-right:6px; }
-
-/* patient strip */
-.patient-strip{
-  display:flex;
-  gap:12px;
-  align-items:center;
-  border-top:1px solid var(--divider-color);
-  border-bottom:1px solid var(--divider-color);
-  padding:8px 6px;
-  margin:8px 0 12px 0;
-  font-size:11pt;
-}
-.patient-strip > div{ min-width:120px; }
-
-/* two columns main */
-.main-columns{ display:flex; gap:18px; align-items:flex-start; }
-
-/* left column */
-.col-left{
-  width:var(--left-col-w);
-  font-size:11pt;
-  padding-right:8px;
-  box-sizing:border-box;
+.grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    gap: 10px;
 }
 
-/* right column */
-.col-right{
-  width:var(--right-col-w);
-  font-size:11pt;
-  border-left:1px solid var(--divider-color);
-  padding-left:16px;
-  box-sizing:border-box;
+
+/* PRINT LAYOUT (Prescription Paper) */
+
+.prescription {
+    width: 210mm;
+    min-height: 297mm;
+    background: white;
+    padding: 15mm 20mm;
+    margin: 20px auto;
+    box-shadow: 0 0 5px #aaa;
+    position: relative;
 }
 
-/* small section titles */
-.section-title{ font-weight:600; margin-bottom:6px; text-transform:none; }
-.section-content{ white-space:pre-line; font-size:11pt; }
-
-/* Rx styling */
-.rx-title{ font-weight:700; font-size:20pt; margin-bottom:6px; }
-.rx-list .rx-item{ margin-bottom:10px; }
-.rx-item .name{ font-weight:700; font-size:12pt; }
-.rx-item .meta{ font-size:11pt; color:#111; }
-
-/* Advice bullets */
-.advice-list{ margin:6px 0 0 18px; font-size:11pt; }
-
-/* signature */
-.signature-block{ display:flex; justify-content:flex-end; margin-top:26px; }
-.sig-line{ width:220px; border-top:1px solid #000; height:2px; }
-.sig-name{ text-align:right; margin-top:6px; font-size:11pt; }
-
-/* bottom bar */
-.bottom-bar{
-  width:100%;
-  background:#e6e6e6;
-  color:#111;
-  text-align:center;
-  padding:8px 6px;
-  margin-top:18px;
-  font-size:11pt;
-  border-top:1px solid #d0d0d0;
+.top-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    font-size: 14px;
 }
 
-/* developer small footer */
-.dev-footer{ font-size:9pt; text-align:center; opacity:0.7; margin-top:6px; }
+.section-title {
+    font-weight: bold;
+    margin-top: 10px;
+}
 
-/* print behavior */
-@media print{
-  body * { visibility:hidden; }
-  #prescriptionTemplate, #prescriptionTemplate * { visibility:visible; }
-  #prescriptionTemplate{ position: absolute; left:0; top:0; width:100%; }
-  /* ensure bottom bar appears on bottom of page */
-  .bottom-bar{ position:fixed; left:0; right:0; bottom:0; }
-  .dev-footer{ position:fixed; left:0; right:0; bottom:8mm; }
+.two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 25px;
+    margin-top: 20px;
+}
+
+/* signature box */
+.signature {
+    border-top: 1px solid #000;
+    width: 180px;
+    margin-left: auto;
+    margin-top: 40px;
+    padding-top: 5px;
+    text-align: center;
+}
+
+/* footer */
+.footer {
+    position: absolute;
+    bottom: 10mm;
+    text-align: center;
+    width: 100%;
+    font-size: 12px;
+    opacity: 0.7;
+}
+
+/* PRINT MODE */
+@media print {
+    body {
+        background: white;
+    }
+    .input-container {
+        display: none;
+    }
+    #output {
+        margin: 0;
+    }
+    .prescription {
+        box-shadow: none;
+        margin: 0;
+        width: 100%;
+        min-height: auto;
+        padding: 0;
+    }
 }

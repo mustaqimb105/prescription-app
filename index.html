@@ -1,104 +1,203 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Prescription Builder — Entry & Print Preview</title>
+  <title>Responsive Prescription Builder (Form ↔ Preview)</title>
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; }
-    .entry-form, .controls { margin-bottom: 20px; }
-    .prescription-output { display: none; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: Arial, sans-serif;
+      background: #f9f9f9;
+      padding: 10px;
+    }
+    .split-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      max-width: 1200px;
+      margin: auto;
+    }
+    .panel {
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .entry-panel {
+      flex: 1 1 400px;
+      min-width: 300px;
+    }
+    .preview-panel {
+      flex: 1 1 400px;
+      min-width: 300px;
+    }
+
+    .entry-panel h2 {
+      margin-bottom: 10px;
+    }
+    .entry-panel label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: bold;
+    }
+    .entry-panel input,
+    .entry-panel textarea {
+      width: 100%;
+      padding: 6px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+    .med-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .med-row input {
+      flex: 1 1 auto;
+      min-width: 100px;
+    }
+    button {
+      padding: 8px 14px;
+      background: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+
+    /* Preview styling */
+    .preview-panel {
+      display: none; /* hide until first preview/print */
+    }
+    .preview-output {
+      background: white;
+      padding: 20px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    .preview-output h3 {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    .preview-output .meta div {
+      margin-bottom: 6px;
+    }
+    .preview-output .medicines table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    .preview-output .medicines th,
+    .preview-output .medicines td {
+      border: 1px solid #444;
+      padding: 6px 8px;
+      text-align: left;
+      font-size: 14px;
+    }
+    .preview-output .medicines th {
+      background: #e6f0ff;
+    }
+    .preview-output .signature {
+      margin-top: 30px;
+      text-align: right;
+    }
 
     /* Print styles */
     @media print {
-      .entry-form, .controls { display: none !important; }
-      .prescription-output { display: block !important; }
+      body {
+        background: white;
+        font-family: Calibri, sans-serif;
+      }
+      .entry-panel {
+        display: none !important;
+      }
+      .preview-panel {
+        display: block !important;
+      }
+      button, .med-row input {
+        display: none;
+      }
     }
-
-    /* Simple styling for prescription output */
-    .prescription-output .header { text-align: center; margin-bottom: 20px; }
-    .prescription-output .patient-info div {
-      margin-bottom: 6px;
-    }
-    .prescription-output .medicines table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-    .prescription-output .medicines th,
-    .prescription-output .medicines td {
-      border: 1px solid #444;
-      padding: 6px;
-      text-align: left;
-    }
-    .prescription-output .medicines th {
-      background: #eee;
-    }
-    .signature { margin-top: 40px; text-align: right; }
   </style>
 </head>
 <body>
+  <div class="split-container">
+    <!-- Data Entry Panel -->
+    <div class="panel entry-panel">
+      <h2>Enter Prescription Data</h2>
 
-  <!-- Data‑entry form -->
-  <div class="entry-form">
-    <h2>Enter Prescription Data</h2>
-    <label>Patient Name: <input type="text" id="patientName"></label><br>
-    <label>Age / Sex: <input type="text" id="ageSex"></label><br>
-    <label>Date: <input type="date" id="date"></label><br>
-    <label>Mobile: <input type="text" id="mobile"></label><br>
+      <label>Patient Name:</label>
+      <input type="text" id="patientName" placeholder="Name">
 
-    <label>Complaint / History:<br>
-      <textarea id="cc" rows="2" cols="40"></textarea>
-    </label><br>
-    <label>On Exam / Findings:<br>
-      <textarea id="oe" rows="2" cols="40"></textarea>
-    </label><br>
-    <label>Diagnosis / Advice:<br>
-      <textarea id="advice" rows="2" cols="40"></textarea>
-    </label><br>
+      <label>Age / Sex:</label>
+      <input type="text" id="ageSex" placeholder="e.g. 32 / M">
 
-    <h3>Medicines</h3>
-    <div id="medList">
-      <!-- one row initially -->
-      <div class="med-row">
-        <input type="text" placeholder="Medicine name" class="med-name">
-        <input type="text" placeholder="Dose / Freq" class="med-dose">
-        <input type="text" placeholder="Duration / Instruction" class="med-duration">
+      <label>Date:</label>
+      <input type="date" id="date">
+
+      <label>Mobile:</label>
+      <input type="text" id="mobile" placeholder="Phone">
+
+      <label>Complaint / History:</label>
+      <textarea id="cc" placeholder="Chief complaint / history"></textarea>
+
+      <label>O/E / Findings:</label>
+      <textarea id="oe" placeholder="On examination / findings"></textarea>
+
+      <label>Diagnosis / Advice:</label>
+      <textarea id="advice" placeholder="Diagnosis / advice"></textarea>
+
+      <h3>Medicines</h3>
+      <div id="medList">
+        <div class="med-row">
+          <input type="text" placeholder="Medicine name" class="med-name">
+          <input type="text" placeholder="Dose & Freq" class="med-dose">
+          <input type="text" placeholder="Duration / Instruction" class="med-duration">
+        </div>
+      </div>
+      <button id="addMed">Add Another Medicine</button>
+
+      <div style="margin-top:20px;">
+        <button id="previewBtn">Show Preview</button>
+        <button id="printBtn">Preview & Print</button>
       </div>
     </div>
-    <button id="addMed">Add Another Medicine</button>
-  </div>
 
-  <div class="controls">
-    <button id="previewPrint">Preview & Print</button>
-  </div>
+    <!-- Preview Panel -->
+    <div class="panel preview-panel">
+      <div class="preview-output" id="previewOutput">
+        <h3>Prescription</h3>
+        <div class="meta">
+          <div><strong>Patient Name:</strong> <span id="pvName"></span></div>
+          <div><strong>Age / Sex:</strong> <span id="pvAgeSex"></span></div>
+          <div><strong>Date:</strong> <span id="pvDate"></span></div>
+          <div><strong>Mobile:</strong> <span id="pvMobile"></span></div>
+        </div>
 
-  <!-- Prescription output (for print) -->
-  <div class="prescription-output">
-    <div class="header">
-      <div><strong>City Clinic</strong></div>
-      <div>Address, Contact Info</div>
-    </div>
-    <div class="patient-info">
-      <div><strong>Patient Name:</strong> <span id="pvName"></span></div>
-      <div><strong>Age / Sex:</strong> <span id="pvAgeSex"></span></div>
-      <div><strong>Date:</strong> <span id="pvDate"></span></div>
-      <div><strong>Mobile:</strong> <span id="pvMobile"></span></div>
-    </div>
-    <div class="clinical-info">
-      <div><strong>Complaint / History:</strong> <span id="pvCC"></span></div>
-      <div><strong>On Exam / Findings:</strong> <span id="pvOE"></span></div>
-      <div><strong>Diagnosis / Advice:</strong> <span id="pvAdvice"></span></div>
-    </div>
-    <div class="medicines">
-      <table id="pvMedTable">
-        <thead>
-          <tr><th>#</th><th>Medicine</th><th>Dose / Freq</th><th>Duration / Instruction</th></tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </div>
-    <div class="signature">
-      <div>Doctor’s Signature: ____________________</div>
+        <div class="notes">
+          <div><strong>Complaint / History:</strong> <span id="pvCC"></span></div>
+          <div><strong>O/E / Findings:</strong> <span id="pvOE"></span></div>
+          <div><strong>Diagnosis / Advice:</strong> <span id="pvAdvice"></span></div>
+        </div>
+
+        <div class="medicines">
+          <table id="pvMedTable">
+            <thead><tr><th>#</th><th>Medicine</th><th>Dose & Freq</th><th>Duration / Instruction</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <div class="signature">
+          <div>Doctor’s Signature: ____________________________</div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -106,14 +205,14 @@
     document.getElementById('addMed').addEventListener('click', function(){
       const div = document.createElement('div');
       div.className = 'med-row';
-      div.innerHTML = '<input type="text" placeholder="Medicine name" class="med-name"> ' +
-                      '<input type="text" placeholder="Dose / Freq" class="med-dose"> ' +
-                      '<input type="text" placeholder="Duration / Instruction" class="med-duration">';
+      div.innerHTML =
+        '<input type="text" placeholder="Medicine name" class="med-name">' +
+        '<input type="text" placeholder="Dose & Freq" class="med-dose">' +
+        '<input type="text" placeholder="Duration / Instruction" class="med-duration">';
       document.getElementById('medList').append(div);
     });
 
-    document.getElementById('previewPrint').addEventListener('click', function(){
-      // copy values
+    function fillPreview() {
       document.getElementById('pvName').innerText = document.getElementById('patientName').value;
       document.getElementById('pvAgeSex').innerText = document.getElementById('ageSex').value;
       document.getElementById('pvDate').innerText = document.getElementById('date').value;
@@ -122,15 +221,14 @@
       document.getElementById('pvOE').innerText = document.getElementById('oe').value;
       document.getElementById('pvAdvice').innerText = document.getElementById('advice').value;
 
-      // medicines
       const medRows = document.querySelectorAll('.med-row');
       const tbody = document.getElementById('pvMedTable').getElementsByTagName('tbody')[0];
       tbody.innerHTML = '';
       medRows.forEach((r,i) => {
-        const name = r.querySelector('.med-name').value;
-        const dose = r.querySelector('.med-dose').value;
-        const dur = r.querySelector('.med-duration').value;
-        if (name.trim() !== '') {
+        const name = r.querySelector('.med-name').value.trim();
+        const dose = r.querySelector('.med-dose').value.trim();
+        const dur  = r.querySelector('.med-duration').value.trim();
+        if (name !== '') {
           const tr = tbody.insertRow();
           tr.insertCell(0).innerText = i + 1;
           tr.insertCell(1).innerText = name;
@@ -138,14 +236,19 @@
           tr.insertCell(3).innerText = dur;
         }
       });
+    }
 
-      // show output and invoke print
-      document.querySelector('.prescription-output').style.display = 'block';
+    document.getElementById('previewBtn').addEventListener('click', function(){
+      fillPreview();
+      document.querySelector('.preview-panel').style.display = 'block';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    document.getElementById('printBtn').addEventListener('click', function(){
+      fillPreview();
+      document.querySelector('.preview-panel').style.display = 'block';
       window.print();
-      // after print, optionally you could show form again:
-      // document.querySelector('.prescription-output').style.display = 'none';
     });
   </script>
-
 </body>
 </html>

@@ -1,93 +1,64 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Prescription Builder</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      color: #001f3f;
-      background: #f9f9f9;
-      margin: 0;
-      padding: 20px;
-    }
-    .container {
-      max-width: 800px;
-      margin: auto;
-      background: white;
-      padding: 30px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      border-radius: 12px;
-    }
-    header h1 {
-      margin: 0;
-      font-size: 28px;
-      color: #001f3f;
-    }
-    header .subtitle {
-      margin: 0;
-      font-size: 16px;
-      color: #333;
-    }
-    section {
-      margin-top: 20px;
-    }
-    section label {
-      font-weight: bold;
-      display: block;
-      margin-bottom: 5px;
-    }
-    section input, section textarea {
-      width: 100%;
-      padding: 8px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      margin-bottom: 10px;
-      font-size: 14px;
-    }
-    .medicine-list table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-bottom: 10px;
-    }
-    .medicine-list th, .medicine-list td {
-      border: 1px solid #ccc;
-      padding: 8px;
-      text-align: left;
-    }
-    .medicine-list th {
-      background-color: #e6f0ff;
-    }
-    button {
-      background-color: #001f3f;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 14px;
-      margin-right: 10px;
-    }
-    button:hover {
-      background-color: #003366;
-    }
-    /* Print Styling */
-    @media print {
-      body { background: white; color: black; }
-      button, #addRow { display: none; }
-      .container { box-shadow: none; padding: 0; }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prescription Builder - Print Calibri</title>
+<style>
+  /* General styling */
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #001f3f; background: #f9f9f9; line-height: 1.5; }
+  .container { max-width: 900px; margin: 20px auto; background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+
+  header h1 { font-size: 28px; color: #001f3f; margin-bottom: 5px; }
+  header .subtitle { font-size: 16px; color: #333; margin-bottom: 20px; }
+
+  section { margin-top: 20px; }
+  section label { font-weight: bold; display: block; margin-bottom: 5px; }
+  section input, section textarea { width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc; margin-bottom: 10px; font-size: 14px; }
+  textarea { resize: vertical; min-height: 50px; }
+
+  .medicine-list table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
+  .medicine-list th, .medicine-list td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+  .medicine-list th { background-color: #e6f0ff; }
+
+  button { background-color: #001f3f; color: #fff; border: none; padding: 10px 18px; border-radius: 6px; cursor: pointer; font-size: 14px; margin: 5px 0; }
+  button:hover { background-color: #003366; }
+
+  /* Preview panel */
+  #preview { display: none; margin-top: 25px; padding: 20px; border: 2px dashed #001f3f; border-radius: 12px; background: #f0f8ff; }
+  #preview h2 { text-align: center; margin-bottom: 15px; }
+  #preview table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+  #preview th, #preview td { border: 1px solid #001f3f; padding: 8px; text-align: left; }
+  #preview th { background-color: #cce0ff; }
+
+  /* Flex layout for inputs */
+  @media (min-width: 600px) {
+    .flex-row { display: flex; gap: 15px; flex-wrap: wrap; }
+    .flex-row > div { flex: 1; min-width: 120px; }
+  }
+
+  /* Print styling */
+  @media print {
+    body { background: white; color: black; font-family: Calibri, sans-serif; }
+    button, #addRow { display: none; }
+    #preview { border: none; background: none; display: block; }
+    .container { box-shadow: none; padding: 0; }
+    input, textarea { border: none; padding: 0; margin: 0; width: auto; }
+  }
+</style>
 </head>
 <body>
-  <div class="container">
-    <header>
-      <h1>City Clinic</h1>
-      <p class="subtitle">Prescription</p>
-    </header>
 
-    <section class="patient-info">
+<div class="container">
+  <header>
+    <h1>City Clinic</h1>
+    <p class="subtitle">Prescription</p>
+  </header>
+
+  <!-- Patient Info -->
+  <section class="patient-info">
+    <div class="flex-row">
       <div>
         <label>Patient Name:</label>
         <input type="text" id="patientName" placeholder="Enter name">
@@ -96,6 +67,8 @@
         <label>Age/Sex:</label>
         <input type="text" id="ageSex" placeholder="Age / Sex">
       </div>
+    </div>
+    <div class="flex-row">
       <div>
         <label>Date:</label>
         <input type="date" id="date">
@@ -104,82 +77,138 @@
         <label>Mobile:</label>
         <input type="text" id="mobile" placeholder="Phone Number">
       </div>
-    </section>
+    </div>
+  </section>
 
-    <section class="clinical-notes">
-      <div>
-        <label>Chief Complaint (C/C):</label>
-        <textarea id="cc" placeholder="Enter chief complaint"></textarea>
-      </div>
-      <div>
-        <label>O/E Findings:</label>
-        <textarea id="oe" placeholder="On Examination"></textarea>
-      </div>
-      <div>
-        <label>Investigations:</label>
-        <textarea id="investigation" placeholder="Lab / Imaging"></textarea>
-      </div>
-      <div>
-        <label>Advice / Diagnosis:</label>
-        <textarea id="advice" placeholder="Advice / Diagnosis"></textarea>
-      </div>
-    </section>
+  <!-- Clinical Notes -->
+  <section class="clinical-notes">
+    <div>
+      <label>Chief Complaint (C/C):</label>
+      <textarea id="cc" placeholder="Enter chief complaint"></textarea>
+    </div>
+    <div>
+      <label>O/E Findings:</label>
+      <textarea id="oe" placeholder="On Examination"></textarea>
+    </div>
+    <div>
+      <label>Investigations:</label>
+      <textarea id="investigation" placeholder="Lab / Imaging"></textarea>
+    </div>
+    <div>
+      <label>Advice / Diagnosis:</label>
+      <textarea id="advice" placeholder="Advice / Diagnosis"></textarea>
+    </div>
+  </section>
 
-    <section class="medicine-list">
-      <h2>Medicines</h2>
-      <table id="medTable">
-        <thead>
-          <tr>
-            <th>Medicine</th>
-            <th>Dosage</th>
-            <th>Frequency</th>
-            <th>Duration</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td contenteditable="true">Paracetamol</td>
-            <td contenteditable="true">500mg</td>
-            <td contenteditable="true">3x/day</td>
-            <td contenteditable="true">5 days</td>
-          </tr>
-        </tbody>
-      </table>
-      <button id="addRow">Add Medicine</button>
-    </section>
+  <!-- Medicines -->
+  <section class="medicine-list">
+    <h2>Medicines</h2>
+    <table id="medTable">
+      <thead>
+        <tr>
+          <th>Medicine</th>
+          <th>Dosage</th>
+          <th>Frequency</th>
+          <th>Duration</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td contenteditable="true">Paracetamol</td>
+          <td contenteditable="true">500mg</td>
+          <td contenteditable="true">3x/day</td>
+          <td contenteditable="true">5 days</td>
+          <td><button class="removeBtn">Remove</button></td>
+        </tr>
+      </tbody>
+    </table>
+    <button id="addRow">Add Medicine</button>
+  </section>
 
-    <section class="actions">
-      <button id="previewBtn">Preview</button>
-      <button onclick="window.print()">Print / Save PDF</button>
-    </section>
-  </div>
+  <!-- Actions -->
+  <section class="actions">
+    <button id="previewBtn">Preview</button>
+    <button onclick="window.print()">Print / Save PDF</button>
+  </section>
 
-  <script>
-    // Add new row to medicine table
-    document.getElementById('addRow').addEventListener('click', function() {
-      const table = document.getElementById('medTable').getElementsByTagName('tbody')[0];
-      const newRow = table.insertRow();
-      for(let i=0; i<4; i++){
-        const cell = newRow.insertCell(i);
-        cell.contentEditable = "true";
-        cell.innerText = "";
+  <!-- Preview -->
+  <section id="preview">
+    <h2>Prescription Preview</h2>
+    <p><strong>Patient:</strong> <span id="pvPatient"></span></p>
+    <p><strong>Age/Sex:</strong> <span id="pvAgeSex"></span></p>
+    <p><strong>Date:</strong> <span id="pvDate"></span></p>
+    <p><strong>Mobile:</strong> <span id="pvMobile"></span></p>
+    <p><strong>Chief Complaint (C/C):</strong> <span id="pvCC"></span></p>
+    <p><strong>O/E Findings:</strong> <span id="pvOE"></span></p>
+    <p><strong>Investigations:</strong> <span id="pvInvestigation"></span></p>
+    <p><strong>Advice / Diagnosis:</strong> <span id="pvAdvice"></span></p>
+    <h3>Medicines:</h3>
+    <table id="pvMedTable">
+      <thead>
+        <tr>
+          <th>Medicine</th>
+          <th>Dosage</th>
+          <th>Frequency</th>
+          <th>Duration</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </section>
+</div>
+
+<script>
+  // Add medicine row
+  document.getElementById('addRow').addEventListener('click', function() {
+    const table = document.getElementById('medTable').getElementsByTagName('tbody')[0];
+    const newRow = table.insertRow();
+    for(let i=0; i<4; i++){
+      const cell = newRow.insertCell(i);
+      cell.contentEditable = "true";
+      cell.innerText = "";
+    }
+    const actionCell = newRow.insertCell(4);
+    const removeBtn = document.createElement('button');
+    removeBtn.innerText = 'Remove';
+    removeBtn.classList.add('removeBtn');
+    removeBtn.onclick = function(){ newRow.remove(); };
+    actionCell.appendChild(removeBtn);
+  });
+
+  // Remove medicine button
+  document.addEventListener('click', function(e){
+    if(e.target && e.target.classList.contains('removeBtn')){
+      e.target.closest('tr').remove();
+    }
+  });
+
+  // Preview logic
+  document.getElementById('previewBtn').addEventListener('click', function() {
+    document.getElementById('pvPatient').innerText = document.getElementById('patientName').value;
+    document.getElementById('pvAgeSex').innerText = document.getElementById('ageSex').value;
+    document.getElementById('pvDate').innerText = document.getElementById('date').value;
+    document.getElementById('pvMobile').innerText = document.getElementById('mobile').value;
+    document.getElementById('pvCC').innerText = document.getElementById('cc').value;
+    document.getElementById('pvOE').innerText = document.getElementById('oe').value;
+    document.getElementById('pvInvestigation').innerText = document.getElementById('investigation').value;
+    document.getElementById('pvAdvice').innerText = document.getElementById('advice').value;
+
+    // Copy medicines
+    const medTable = document.getElementById('medTable').getElementsByTagName('tbody')[0];
+    const pvMedTable = document.getElementById('pvMedTable').getElementsByTagName('tbody')[0];
+    pvMedTable.innerHTML = '';
+    for(let row of medTable.rows){
+      const newRow = pvMedTable.insertRow();
+      for(let i=0;i<4;i++){
+        const newCell = newRow.insertCell();
+        newCell.innerText = row.cells[i].innerText;
       }
-    });
+    }
 
-    // Preview alert
-    document.getElementById('previewBtn').addEventListener('click', function() {
-      const patient = document.getElementById('patientName').value;
-      const ageSex = document.getElementById('ageSex').value;
-      const date = document.getElementById('date').value;
-      const mobile = document.getElementById('mobile').value;
-      const cc = document.getElementById('cc').value;
-      const oe = document.getElementById('oe').value;
-      const investigation = document.getElementById('investigation').value;
-      const advice = document.getElementById('advice').value;
-      alert(
-        `Patient: ${patient}\nAge/Sex: ${ageSex}\nDate: ${date}\nMobile: ${mobile}\n\nC/C: ${cc}\nO/E: ${oe}\nInvestigation: ${investigation}\nAdvice: ${advice}`
-      );
-    });
-  </script>
+    document.getElementById('preview').style.display = 'block';
+    document.getElementById('preview').scrollIntoView({ behavior: 'smooth' });
+  });
+</script>
 </body>
 </html>

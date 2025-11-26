@@ -1,97 +1,123 @@
+/* ------------------------------
+   GLOBAL
+------------------------------ */
 body {
-    font-family: Arial;
-    background: #f2f2f2;
-    padding: 20px;
+  font-family: Arial, sans-serif;
+  background: #f7f9fc;
+  margin: 0;
+  padding: 20px;
+  color: #000;
 }
 
-/* input area */
-.input-container {
-    background: white;
-    padding: 20px;
-    max-width: 800px;
-    margin: auto;
-    border-radius: 10px;
+.container {
+  max-width: 1100px;
+  margin: auto;
 }
 
-textarea, input {
-    width: 100%;
-    padding: 10px;
-    margin: 5px 0 15px;
+h1 {
+  text-align: center;
+  color: #003366;
+  margin-bottom: 25px;
 }
 
-.grid-3 {
-    display: grid;
-    grid-template-columns: repeat(3,1fr);
-    gap: 10px;
+/* ------------------------------
+   LAYOUT GRID
+------------------------------ */
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 22px;
 }
 
-
-/* PRINT LAYOUT (Prescription Paper) */
-
-.prescription {
-    width: 210mm;
-    min-height: 297mm;
-    background: white;
-    padding: 15mm 20mm;
-    margin: 20px auto;
-    box-shadow: 0 0 5px #aaa;
-    position: relative;
-}
-
-.top-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    font-size: 14px;
+.card {
+  background: #fff;
+  border: 2px solid #003366;
+  border-radius: 10px;
+  padding: 18px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 }
 
 .section-title {
-    font-weight: bold;
-    margin-top: 10px;
+  font-weight: bold;
+  font-size: 18px;
+  margin-bottom: 10px;
+  padding-left: 6px;
+  border-left: 5px solid #003366;
+  color: #003366;
 }
 
-.two-col {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 25px;
-    margin-top: 20px;
+/* ------------------------------
+   INPUTS
+------------------------------ */
+input, textarea {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #003366;
+  border-radius: 6px;
+  margin-bottom: 10px;
+  font-size: 14px;
 }
 
-/* signature box */
-.signature {
-    border-top: 1px solid #000;
-    width: 180px;
-    margin-left: auto;
-    margin-top: 40px;
-    padding-top: 5px;
-    text-align: center;
+textarea {
+  height: 60px;
+  resize: vertical;
 }
 
-/* footer */
-.footer {
-    position: absolute;
-    bottom: 10mm;
-    text-align: center;
-    width: 100%;
-    font-size: 12px;
-    opacity: 0.7;
+/* ------------------------------
+   BUTTONS
+------------------------------ */
+.btn {
+  background: #003366;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  margin-right: 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
 }
 
-/* PRINT MODE */
+.btn:hover {
+  opacity: 0.85;
+}
+
+/* ------------------------------
+   MEDICINE LIST
+------------------------------ */
+.med-item {
+  border: 1px solid #003366;
+  padding: 8px;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  background: #f0f5ff;
+}
+
+.med-item button {
+  float: right;
+  background: red;
+  padding: 4px 8px;
+}
+
+/* ------------------------------
+   PRINT STYLES
+------------------------------ */
 @media print {
-    body {
-        background: white;
-    }
-    .input-container {
-        display: none;
-    }
-    #output {
-        margin: 0;
-    }
-    .prescription {
-        box-shadow: none;
-        margin: 0;
-        width: 100%;
-        min-height: auto;
-        padding: 0;
-    }
+  body {
+    background: white;
+    padding: 0;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .card {
+    box-shadow: none;
+    border: 2px solid #003366;
+  }
+  .grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  input, textarea {
+    border: none !important;
+  }
 }

@@ -1,214 +1,218 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Prescription Builder - Print Calibri</title>
-<style>
-  /* General styling */
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #001f3f; background: #f9f9f9; line-height: 1.5; }
-  .container { max-width: 900px; margin: 20px auto; background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-
-  header h1 { font-size: 28px; color: #001f3f; margin-bottom: 5px; }
-  header .subtitle { font-size: 16px; color: #333; margin-bottom: 20px; }
-
-  section { margin-top: 20px; }
-  section label { font-weight: bold; display: block; margin-bottom: 5px; }
-  section input, section textarea { width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc; margin-bottom: 10px; font-size: 14px; }
-  textarea { resize: vertical; min-height: 50px; }
-
-  .medicine-list table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
-  .medicine-list th, .medicine-list td { border: 1px solid #ccc; padding: 8px; text-align: left; }
-  .medicine-list th { background-color: #e6f0ff; }
-
-  button { background-color: #001f3f; color: #fff; border: none; padding: 10px 18px; border-radius: 6px; cursor: pointer; font-size: 14px; margin: 5px 0; }
-  button:hover { background-color: #003366; }
-
-  /* Preview panel */
-  #preview { display: none; margin-top: 25px; padding: 20px; border: 2px dashed #001f3f; border-radius: 12px; background: #f0f8ff; }
-  #preview h2 { text-align: center; margin-bottom: 15px; }
-  #preview table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-  #preview th, #preview td { border: 1px solid #001f3f; padding: 8px; text-align: left; }
-  #preview th { background-color: #cce0ff; }
-
-  /* Flex layout for inputs */
-  @media (min-width: 600px) {
-    .flex-row { display: flex; gap: 15px; flex-wrap: wrap; }
-    .flex-row > div { flex: 1; min-width: 120px; }
-  }
-
-  /* Print styling */
-  @media print {
-    body { background: white; color: black; font-family: Calibri, sans-serif; }
-    button, #addRow { display: none; }
-    #preview { border: none; background: none; display: block; }
-    .container { box-shadow: none; padding: 0; }
-    input, textarea { border: none; padding: 0; margin: 0; width: auto; }
-  }
-</style>
-</head>
-<body>
-
-<div class="container">
-  <header>
-    <h1>City Clinic</h1>
-    <p class="subtitle">Prescription</p>
-  </header>
-
-  <!-- Patient Info -->
-  <section class="patient-info">
-    <div class="flex-row">
-      <div>
-        <label>Patient Name:</label>
-        <input type="text" id="patientName" placeholder="Enter name">
-      </div>
-      <div>
-        <label>Age/Sex:</label>
-        <input type="text" id="ageSex" placeholder="Age / Sex">
-      </div>
-    </div>
-    <div class="flex-row">
-      <div>
-        <label>Date:</label>
-        <input type="date" id="date">
-      </div>
-      <div>
-        <label>Mobile:</label>
-        <input type="text" id="mobile" placeholder="Phone Number">
-      </div>
-    </div>
-  </section>
-
-  <!-- Clinical Notes -->
-  <section class="clinical-notes">
-    <div>
-      <label>Chief Complaint (C/C):</label>
-      <textarea id="cc" placeholder="Enter chief complaint"></textarea>
-    </div>
-    <div>
-      <label>O/E Findings:</label>
-      <textarea id="oe" placeholder="On Examination"></textarea>
-    </div>
-    <div>
-      <label>Investigations:</label>
-      <textarea id="investigation" placeholder="Lab / Imaging"></textarea>
-    </div>
-    <div>
-      <label>Advice / Diagnosis:</label>
-      <textarea id="advice" placeholder="Advice / Diagnosis"></textarea>
-    </div>
-  </section>
-
-  <!-- Medicines -->
-  <section class="medicine-list">
-    <h2>Medicines</h2>
-    <table id="medTable">
-      <thead>
-        <tr>
-          <th>Medicine</th>
-          <th>Dosage</th>
-          <th>Frequency</th>
-          <th>Duration</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td contenteditable="true">Paracetamol</td>
-          <td contenteditable="true">500mg</td>
-          <td contenteditable="true">3x/day</td>
-          <td contenteditable="true">5 days</td>
-          <td><button class="removeBtn">Remove</button></td>
-        </tr>
-      </tbody>
-    </table>
-    <button id="addRow">Add Medicine</button>
-  </section>
-
-  <!-- Actions -->
-  <section class="actions">
-    <button id="previewBtn">Preview</button>
-    <button onclick="window.print()">Print / Save PDF</button>
-  </section>
-
-  <!-- Preview -->
-  <section id="preview">
-    <h2>Prescription Preview</h2>
-    <p><strong>Patient:</strong> <span id="pvPatient"></span></p>
-    <p><strong>Age/Sex:</strong> <span id="pvAgeSex"></span></p>
-    <p><strong>Date:</strong> <span id="pvDate"></span></p>
-    <p><strong>Mobile:</strong> <span id="pvMobile"></span></p>
-    <p><strong>Chief Complaint (C/C):</strong> <span id="pvCC"></span></p>
-    <p><strong>O/E Findings:</strong> <span id="pvOE"></span></p>
-    <p><strong>Investigations:</strong> <span id="pvInvestigation"></span></p>
-    <p><strong>Advice / Diagnosis:</strong> <span id="pvAdvice"></span></p>
-    <h3>Medicines:</h3>
-    <table id="pvMedTable">
-      <thead>
-        <tr>
-          <th>Medicine</th>
-          <th>Dosage</th>
-          <th>Frequency</th>
-          <th>Duration</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </section>
-</div>
-
-<script>
-  // Add medicine row
-  document.getElementById('addRow').addEventListener('click', function() {
-    const table = document.getElementById('medTable').getElementsByTagName('tbody')[0];
-    const newRow = table.insertRow();
-    for(let i=0; i<4; i++){
-      const cell = newRow.insertCell(i);
-      cell.contentEditable = "true";
-      cell.innerText = "";
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Prescription (MyOPD Style)</title>
+  <style>
+    /* Reset / Basic */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f9f9f9;
+      padding: 20px;
     }
-    const actionCell = newRow.insertCell(4);
-    const removeBtn = document.createElement('button');
-    removeBtn.innerText = 'Remove';
-    removeBtn.classList.add('removeBtn');
-    removeBtn.onclick = function(){ newRow.remove(); };
-    actionCell.appendChild(removeBtn);
-  });
-
-  // Remove medicine button
-  document.addEventListener('click', function(e){
-    if(e.target && e.target.classList.contains('removeBtn')){
-      e.target.closest('tr').remove();
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
-  });
 
-  // Preview logic
-  document.getElementById('previewBtn').addEventListener('click', function() {
-    document.getElementById('pvPatient').innerText = document.getElementById('patientName').value;
-    document.getElementById('pvAgeSex').innerText = document.getElementById('ageSex').value;
-    document.getElementById('pvDate').innerText = document.getElementById('date').value;
-    document.getElementById('pvMobile').innerText = document.getElementById('mobile').value;
-    document.getElementById('pvCC').innerText = document.getElementById('cc').value;
-    document.getElementById('pvOE').innerText = document.getElementById('oe').value;
-    document.getElementById('pvInvestigation').innerText = document.getElementById('investigation').value;
-    document.getElementById('pvAdvice').innerText = document.getElementById('advice').value;
+    /* Clinic header */
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .header img.logo {
+      max-height: 80px;
+      margin-bottom: 10px;
+    }
+    .header .clinic-name {
+      font-size: 24px;
+      font-weight: bold;
+      color: #001f3f;
+    }
+    .header .clinic-details {
+      font-size: 14px;
+      color: #333;
+      margin-top: 4px;
+    }
 
-    // Copy medicines
-    const medTable = document.getElementById('medTable').getElementsByTagName('tbody')[0];
-    const pvMedTable = document.getElementById('pvMedTable').getElementsByTagName('tbody')[0];
-    pvMedTable.innerHTML = '';
-    for(let row of medTable.rows){
-      const newRow = pvMedTable.insertRow();
-      for(let i=0;i<4;i++){
-        const newCell = newRow.insertCell();
-        newCell.innerText = row.cells[i].innerText;
+    hr.divider {
+      border: none;
+      border-top: 1px solid #999;
+      margin: 20px 0;
+    }
+
+    /* Patient info & meta */
+    .patient-info, .clinical-info {
+      margin-bottom: 15px;
+    }
+    .patient-info .row, .clinical-info .row {
+      display: flex;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+    .patient-info .row div,
+    .clinical-info .row div {
+      flex: 1 1 200px;
+      padding-right: 10px;
+    }
+    .patient-info label, .clinical-info label {
+      font-weight: bold;
+      font-size: 14px;
+    }
+    .patient-info span, .clinical-info span {
+      font-size: 14px;
+      color: #000;
+    }
+
+    /* Medicines table */
+    .medicines {
+      margin-top: 15px;
+      margin-bottom: 20px;
+    }
+    .medicines table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .medicines th, .medicines td {
+      border: 1px solid #444;
+      padding: 6px 8px;
+      font-size: 14px;
+      text-align: left;
+    }
+    .medicines th {
+      background-color: #e6f0ff;
+    }
+
+    /* Signature/footer */
+    .footer {
+      margin-top: 40px;
+    }
+    .footer .signature-block {
+      float: right;
+      text-align: center;
+      margin-top: 60px;
+    }
+    .footer .signature-block .line {
+      border-top: 1px solid #000;
+      width: 200px;
+      margin: 0 auto;
+      height: 0;
+    }
+    .footer .signature-block .doctor-name {
+      margin-top: 4px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    /* Print styling (Calibri font, hide controls) */
+    @media print {
+      body { background: white; font-family: Calibri, sans-serif; }
+      button, .edit-area { display: none; }
+      .container { box-shadow: none; padding: 0; margin: 0; }
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 600px) {
+      .patient-info .row div, .clinical-info .row div {
+        flex: 1 1 100%;
+        padding-right: 0;
       }
     }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header / Clinic Info -->
+    <div class="header">
+      <!-- You can put a logo here -->
+      <!-- <img src="logo.png" class="logo" alt="Clinic Logo"> -->
+      <div class="clinic-name">City Clinic</div>
+      <div class="clinic-details">Address line part, City — Phone: 0123‑456789</div>
+    </div>
 
-    document.getElementById('preview').style.display = 'block';
-    document.getElementById('preview').scrollIntoView({ behavior: 'smooth' });
-  });
-</script>
+    <hr class="divider">
+
+    <!-- Patient Info -->
+    <div class="patient-info">
+      <div class="row">
+        <div><label>Patient Name:</label> <span id="pvName"></span></div>
+        <div><label>Age / Sex:</label> <span id="pvAgeSex"></span></div>
+      </div>
+      <div class="row">
+        <div><label>Date:</label> <span id="pvDate"></span></div>
+        <div><label>Mobile:</label> <span id="pvMobile"></span></div>
+      </div>
+    </div>
+
+    <!-- Clinical / Notes Info -->
+    <div class="clinical-info">
+      <div><label>Complaint / History:</label> <span id="pvCC"></span></div>
+      <div><label>O/E / Findings:</label> <span id="pvOE"></span></div>
+      <div><label>Investigations:</label> <span id="pvInvestigation"></span></div>
+      <div><label>Diagnosis / Advice:</label> <span id="pvAdvice"></span></div>
+    </div>
+
+    <!-- Medicines Table -->
+    <div class="medicines">
+      <table id="pvMedTable">
+        <thead>
+          <tr><th>#</th><th>Medicine</th><th>Dosage / Frequency</th><th>Duration / Instruction</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <!-- Signature / Footer -->
+    <div class="footer">
+      <div class="signature-block">
+        <div class="line"></div>
+        <div class="doctor-name">Dr. __________________</div>
+      </div>
+      <div style="clear: both;"></div>
+    </div>
+  </div>
+
+  <!-- Hidden editable input form (for generating preview) -->
+  <div style="display:none;" class="edit-area">
+    <!-- revamp your previous input fields as needed -->
+  </div>
+
+  <!-- For demonstration: you can fill data using JS or a small form -->
+  <script>
+    // Example: fill with dummy data (or get from a form)
+    function fillExample() {
+      document.getElementById('pvName').innerText = 'John Doe';
+      document.getElementById('pvAgeSex').innerText = '29 / M';
+      document.getElementById('pvDate').innerText = new Date().toLocaleDateString();
+      document.getElementById('pvMobile').innerText = '0123456789';
+      document.getElementById('pvCC').innerText = 'Headache & fever for 2 days';
+      document.getElementById('pvOE').innerText = 'Temp 101 °F, BP 120/80 mmHg';
+      document.getElementById('pvInvestigation').innerText = 'CBC, RBS';
+      document.getElementById('pvAdvice').innerText = 'Drink plenty of fluids, rest';
+
+      const meds = [
+        { name: 'Paracetamol 500 mg', dosage: '1 tab', freq: 'TDS', duration: '5 days' },
+        { name: 'Amoxicillin 500 mg', dosage: '1 tab', freq: 'BD', duration: '7 days' },
+      ];
+      const tbody = document.getElementById('pvMedTable').getElementsByTagName('tbody')[0];
+      tbody.innerHTML = '';
+      meds.forEach((m, i) => {
+        const row = tbody.insertRow();
+        row.insertCell().innerText = i+1;
+        row.insertCell().innerText = m.name;
+        row.insertCell().innerText = `${m.dosage}, ${m.freq}`;
+        row.insertCell().innerText = m.duration;
+      });
+    }
+
+    // Uncomment next line to auto‑fill example on load
+    // fillExample();
+  </script>
 </body>
 </html>

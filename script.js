@@ -1,112 +1,82 @@
-/* Fonts + Base Theme */
-body {
-    margin: 0;
-    padding: 0;
-    font-family: Arial, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    transition: 0.3s ease;
+let medicines = [];
+
+// Load CSV from GitHub repo folder
+Papa.parse("data/medicines.csv", {
+    download: true,
+    header: true,
+    complete: function(results) {
+        medicines = results.data;
+        populateFilters();
+        displayResults(medicines);
+    }
+});
+
+// Search
+document.getElementById("searchBox").addEventListener("input", () => {
+    filterData();
+});
+
+// Filters
+document.getElementById("filterGeneric").addEventListener("change", filterData);
+document.getElementById("filterCompany").addEventListener("change", filterData);
+
+// Filtering function
+function filterData() {
+    const q = document.getElementById("searchBox").value.toLowerCase();
+    const gen = document.getElementById("filterGeneric").value;
+    const comp = document.getElementById("filterCompany").value;
+
+    let filtered = medicines.filter(m =>
+        (m.Name?.toLowerCase().includes(q) ||
+         m.Generic?.toLowerCase().includes(q) ||
+         m.Company?.toLowerCase().includes(q)) &&
+        (gen === "" || m.Generic === gen) &&
+        (comp === "" || m.Company === comp)
+    );
+
+    displayResults(filtered);
 }
 
-:root {
-    --bg: #ffffff;
-    --text: #000000;
-    --card-bg: #f5f7ff;
-    --accent: #003d99;
+// Populate dropdowns
+function populateFilters() {
+    const genericSet = [...new Set(medicines.map(m => m.Generic).filter(Boolean))];
+    const companySet = [...new Set(medicines.map(m => m.Company).filter(Boolean))];
+
+    const genSelect = document.getElementById("filterGeneric");
+    const compSelect = document.getElementById("filterCompany");
+
+    genericSet.sort().forEach(g => {
+        genSelect.innerHTML += `<option value="${g}">${g}</option>`;
+    });
+
+    companySet.sort().forEach(c => {
+        compSelect.innerHTML += `<option value="${c}">${c}</option>`;
+    });
 }
 
-body.dark {
-    --bg: #0f141a;
-    --text: #e6e6e6;
-    --card-bg: #1c2530;
-    --accent: #4d9aff;
+// Show data
+function displayResults(data) {
+    const div = document.getElementById("results");
+
+    if (!data.length) {
+        div.innerHTML = "<p>No results found.</p>";
+        return;
+    }
+
+    div.innerHTML = data.map(d => `
+        <div class="card">
+            <b>${d.Name || "Unknown Name"}</b><br>
+            Generic: ${d.Generic || "N/A"}<br>
+            Company: ${d.Company || "N/A"}<br>
+            Price: ${d.Price || "N/A"}
+        </div>
+    `).join('');
 }
 
-header {
-    text-align: center;
-    padding: 18px;
-    background: var(--accent);
-    color: white;
-    font-size: 1.4rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
+/* Dark Mode Toggle */
+const themeSwitch = document.getElementById("themeSwitch");
 
-.controls {
-    display: flex;
-    gap: 12px;
-    padding: 15px;
-    flex-wrap: wrap;
-}
-
-input, select {
-    padding: 10px;
-    font-size: 1rem;
-    border-radius: 8px;
-    border: 1px solid #999;
-    width: 250px;
-}
-
-/* Cards */
-.results {
-    padding: 20px;
-}
-
-.card {
-    background: var(--card-bg);
-    margin-bottom: 15px;
-    padding: 15px;
-    border-radius: 10px;
-    border-left: 5px solid var(--accent);
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
-
-.card b {
-    font-size: 1.2rem;
-}
-
-/* Theme Switch */
-.switch {
-    position: relative;
-    display: inline-block;
-    width: 45px;
-    height: 22px;
-}
-
-.switch input {
-    display: none;
-}
-
-.slider {
-    position: absolute;
-    cursor: pointer;
-    background-color: #ccc;
-    border-radius: 34px;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    transition: .4s;
-}
-
-.slider:before {
-    position: absolute;
-    content: "";
-    height: 16px;
-    width: 16px;
-    left: 3px;
-    bottom: 3px;
-    background-color: white;
-    border-radius: 50%;
-    transition: .4s;
-}
-
-input:checked + .slider {
-    background-color: var(--accent);
-}
-
-input:checked + .slider:before {
-    transform: translateX(22px);
-}
+themeSwitch.addEventListener("change", () => {
+    document.body.classList.toggle("dark");
+});
 

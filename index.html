@@ -3,62 +3,151 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Live Prescription Full Page</title>
+<title>Desktop Prescription Maker</title>
 <style>
-body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f2f2f2; }
-.container { max-width:1200px; margin:0 auto; padding:20px; }
-input, select, textarea { padding:8px; border-radius:5px; border:1px solid #ccc; margin-top:5px; width:100%; box-sizing:border-box; }
-textarea { resize: vertical; }
-button { padding:10px 15px; margin:5px; border:none; background:#004080; color:#fff; border-radius:5px; cursor:pointer; }
-button:hover { background:#003366; }
-
-.patient-row { display:flex; gap:10px; margin-top:10px; }
-.patient-row > div { flex:1; }
-
-.drug-table { width:100%; border-collapse:collapse; margin-top:10px; }
-.drug-table th, .drug-table td { padding:5px; text-align:left; }
-
-.prescription { width:100%; min-height:29.7cm; padding:40px 60px; background:#fff; box-sizing:border-box; color:#000; line-height:1.5; margin-top:30px; display:flex; flex-direction:column; justify-content:flex-start; }
-.header { display:flex; justify-content:space-between; margin-bottom:20px; }
-.header h3, .header h4 { margin:2px 0; }
-
-.patient-info { margin-bottom:20px; }
-.patient-info div.row { display:flex; justify-content:space-between; width:100%; }
-
-.content { display:flex; gap:20px; border-top:2px solid #000; padding-top:20px; flex:1; }
-.left { width:33%; padding-right:10px; border-right:2px solid #000; display:flex; flex-direction:column; justify-content:space-between; }
-.left div { margin-bottom:20px; flex:1; }
-.right { width:67%; padding-left:10px; }
-.right > div { font-size:20px; }
-
-.signature { text-align:right; margin-top:20px; font-weight:bold; }
-
-@media (max-width:768px){ 
-    .patient-row { flex-direction: column; } 
-    .content { flex-direction: column; } 
-    .left,.right{width:100%; border-right:none; padding:0;} 
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: #f2f2f2;
+}
+.container {
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
 }
 
-@media print{
-    body *{visibility:hidden;}
-    .prescription, .prescription *{visibility:visible;}
-    .prescription{width:100%; height:29.7cm; padding:40px 60px; box-shadow:none; display:flex; flex-direction:column; justify-content:flex-start;}
-    .drug-table, .drug-table th, .drug-table td{border:none; padding:0;}
-    .no-print{display:none;}
+/* Left Entry Panel */
+.entry-panel {
+    width: 50%;
+    background: #fff;
+    padding: 20px;
+    overflow-y: auto;
+    box-sizing: border-box;
+    border-right: 2px solid #ccc;
+}
+.entry-panel h2 {
+    margin-top: 0;
+}
+.entry-panel label {
+    display: block;
+    margin-top: 10px;
+    font-weight: bold;
+}
+.entry-panel input, .entry-panel select, .entry-panel textarea {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+}
+.entry-panel textarea {
+    resize: vertical;
+}
+.entry-panel button {
+    padding: 10px 15px;
+    margin: 10px 5px 0 0;
+    border: none;
+    background: #004080;
+    color: #fff;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.entry-panel button:hover {
+    background: #003366;
+}
+
+/* Right Preview Panel */
+.preview-panel {
+    width: 50%;
+    background: #fff;
+    padding: 20px;
+    box-sizing: border-box;
+    overflow-y: auto;
+}
+.prescription {
+    width: 100%;
+    min-height: 29.7cm;
+    padding: 40px 40px;
+    background: #fff;
+    box-sizing: border-box;
+    color: #000;
+    line-height: 1.5;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+.header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+.header h3, .header h4 {
+    margin: 2px 0;
+}
+.patient-info {
+    margin-bottom: 20px;
+}
+.patient-info div.row {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+.content {
+    display: flex;
+    gap: 20px;
+    flex: 1;
+    border-top: 2px solid #000;
+    padding-top: 20px;
+}
+.left {
+    width: 33%;
+    padding-right: 10px;
+    border-right: 2px solid #000;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.left div {
+    margin-bottom: 20px;
+    flex: 1;
+}
+.right {
+    width: 67%;
+    padding-left: 10px;
+}
+.right > div { font-size: 20px; }
+.signature {
+    text-align: right;
+    margin-top: 20px;
+    font-weight: bold;
+}
+.drug-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+.drug-table th, .drug-table td {
+    padding: 5px;
+    text-align: left;
 }
 </style>
 </head>
 <body>
 
 <div class="container">
-    <h2 class="no-print">Patient & Prescription Entry</h2>
+
+<!-- Left Entry Panel -->
+<div class="entry-panel">
+    <h2>Patient & Prescription Entry</h2>
 
     <!-- Patient Info -->
     <label>Patient Name</label>
     <input type="text" id="patientName" placeholder="Full Name" oninput="updatePreview()">
 
-    <div class="patient-row">
-        <div>
+    <div style="display:flex; gap:10px; margin-top:10px;">
+        <div style="flex:1;">
             <label>Gender</label>
             <select id="patientGender" onchange="updatePreview()">
                 <option value="">Select Gender</option>
@@ -67,18 +156,15 @@ button:hover { background:#003366; }
                 <option value="Other">Other</option>
             </select>
         </div>
-        <div>
+        <div style="flex:1;">
             <label>Age</label>
             <input type="number" id="patientAge" placeholder="Age" oninput="updatePreview()">
         </div>
-        <div>
+        <div style="flex:1;">
             <label>Weight (kg)</label>
             <input type="number" id="patientWeight" placeholder="Weight" oninput="updatePreview()">
         </div>
     </div>
-
-    <label class="no-print">Date of Birth (optional for auto age)</label>
-    <input type="date" id="dob" class="no-print" onchange="calculateDOBAge(); updatePreview();">
 
     <label>Date of Prescription</label>
     <input type="date" id="prescriptionDate" onchange="updatePreview()">
@@ -115,8 +201,10 @@ button:hover { background:#003366; }
     </table>
     <button type="button" onclick="addDrugRow()">+ Add Drug</button>
     <button type="button" onclick="printPrescription()">Print Prescription</button>
+</div>
 
-    <!-- Prescription Preview -->
+<!-- Right Preview Panel -->
+<div class="preview-panel">
     <div class="prescription" id="prescriptionPreview">
         <div class="header">
             <h4 id="clinicPreview">Clinic / Hospital</h4>
@@ -145,29 +233,17 @@ button:hover { background:#003366; }
         </div>
         <div class="signature">Doctor Signature</div>
     </div>
+</div>
 
 </div>
 
 <script>
-document.getElementById('prescriptionDate').valueAsDate=new Date();
+document.getElementById('prescriptionDate').valueAsDate = new Date();
 
-// Auto-calculate age from DOB
-function calculateDOBAge(){
-    const dob=document.getElementById('dob').value;
-    if(!dob) return;
-    const birth=new Date(dob);
-    const today=new Date();
-    let age=today.getFullYear()-birth.getFullYear();
-    const m=today.getMonth()-birth.getMonth();
-    if(m<0||(m===0&&today.getDate()<birth.getDate())) age--;
-    document.getElementById('patientAge').value=age;
-}
-
-// Add Drug Row
 function addDrugRow(){
-    const tbody=document.querySelector('#drugTable tbody');
-    const tr=document.createElement('tr');
-    tr.innerHTML=`
+    const tbody = document.querySelector('#drugTable tbody');
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
         <td>
             <select oninput="updatePreview()">
                 <option value="">Select</option>
@@ -187,33 +263,33 @@ function addDrugRow(){
     tbody.appendChild(tr);
 }
 
-// Live update preview
+// Live preview update
 function updatePreview(){
-    document.getElementById('docNamePreview').innerText=document.getElementById('doctorName').value||'Dr. Name, Credentials';
-    document.getElementById('clinicPreview').innerText=document.getElementById('clinicName').value||'Clinic / Hospital';
+    document.getElementById('docNamePreview').innerText = document.getElementById('doctorName').value || 'Dr. Name, Credentials';
+    document.getElementById('clinicPreview').innerText = document.getElementById('clinicName').value || 'Clinic / Hospital';
 
-    const name=document.getElementById('patientName').value||'--';
-    const age=document.getElementById('patientAge').value||'--';
-    const gender=document.getElementById('patientGender').value||'--';
-    const weight=document.getElementById('patientWeight').value||'--';
-    document.getElementById('patientPreview').innerText=name;
-    document.getElementById('agePreview').innerText=age + ' yr';
-    document.getElementById('genderPreview').innerText=gender;
-    document.getElementById('weightPreview').innerText=weight + ' kg';
+    const name = document.getElementById('patientName').value || '--';
+    const age = document.getElementById('patientAge').value || '--';
+    const gender = document.getElementById('patientGender').value || '--';
+    const weight = document.getElementById('patientWeight').value || '--';
+    document.getElementById('patientPreview').innerText = name;
+    document.getElementById('agePreview').innerText = age + ' yr';
+    document.getElementById('genderPreview').innerText = gender;
+    document.getElementById('weightPreview').innerText = weight + ' kg';
 
-    document.getElementById('datePreview').innerText=document.getElementById('prescriptionDate').value||'--';
-    document.getElementById('complaintsPreview').innerText=document.getElementById('complaints').value||'--';
-    document.getElementById('examinationPreview').innerText=document.getElementById('examination').value||'--';
-    document.getElementById('investigationsPreview').innerText=document.getElementById('investigations').value||'--';
+    document.getElementById('datePreview').innerText = document.getElementById('prescriptionDate').value || '--';
+    document.getElementById('complaintsPreview').innerText = document.getElementById('complaints').value || '--';
+    document.getElementById('examinationPreview').innerText = document.getElementById('examination').value || '--';
+    document.getElementById('investigationsPreview').innerText = document.getElementById('investigations').value || '--';
 
-    const drugsPreview=document.getElementById('drugsPreview');
-    drugsPreview.innerHTML='';
-    document.querySelectorAll('#drugTable tbody tr').forEach(row=>{
-        const cells=row.querySelectorAll('input, select');
-        if(cells[1].value.trim()!==''){ 
+    const drugsPreview = document.getElementById('drugsPreview');
+    drugsPreview.innerHTML = '';
+    document.querySelectorAll('#drugTable tbody tr').forEach(row => {
+        const cells = row.querySelectorAll('input, select');
+        if(cells[1].value.trim() !== ''){
             const type = cells[0].value ? cells[0].value + ' ' : '';
-            const li=document.createElement('li');
-            li.innerText=`${type}${cells[1].value} - ${cells[2].value||'-'} - ${cells[3].value||'-'} - ${cells[4].value||'-'}`;
+            const li = document.createElement('li');
+            li.innerText = `${type}${cells[1].value} - ${cells[2].value||'-'} - ${cells[3].value||'-'} - ${cells[4].value||'-'}`;
             drugsPreview.appendChild(li);
         }
     });

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dynamic Prescription Maker</title>
+<title>Prescription Maker</title>
 <style>
 body {
     font-family: Arial, sans-serif;
@@ -29,24 +29,9 @@ body {
 
 h2 { margin-top: 0; color: #004080; }
 label { display: block; margin-top: 10px; font-weight: bold; }
-input, textarea, select {
-    width: 100%;
-    padding: 8px;
-    margin-top: 3px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    box-sizing: border-box;
-}
+input, textarea, select { width: 100%; padding: 8px; margin-top: 3px; border-radius: 5px; border: 1px solid #ccc; box-sizing: border-box; }
 textarea { resize: vertical; }
-button {
-    margin-top: 10px;
-    padding: 8px 12px;
-    border: none;
-    background-color: #004080;
-    color: white;
-    border-radius: 5px;
-    cursor: pointer;
-}
+button { margin-top: 10px; padding: 8px 12px; border: none; background-color: #004080; color: white; border-radius: 5px; cursor: pointer; }
 button:hover { background-color: #003366; }
 
 .prescription {
@@ -59,14 +44,15 @@ button:hover { background-color: #003366; }
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0,0,0,0.1);
     color: #000;
+    line-height: 1.5;
 }
 .prescription h3, .prescription h4 { margin: 5px 0; text-align: center; }
 .block { margin: 10px 0; }
 .signature { text-align: right; margin-top: 40px; }
 
-.drug-row { display: flex; gap: 5px; margin-top: 5px; }
-.drug-row input { flex: 1; }
-.remove-drug { background-color: #cc0000; }
+.drug-table { width: 100%; border-collapse: collapse; margin-top: 5px; }
+.drug-table th, .drug-table td { border: 1px solid #ccc; padding: 5px; text-align: left; }
+.remove-drug { background-color: #cc0000; color: #fff; }
 
 @media (max-width: 768px) { .container { flex-direction: column; } }
 
@@ -74,6 +60,8 @@ button:hover { background-color: #003366; }
     body * { visibility: hidden; }
     .prescription, .prescription * { visibility: visible; }
     .prescription { margin: 0; width: 100%; max-width: 100%; box-shadow: none; border: 1px solid #000; padding: 20px; }
+    .prescription ul { list-style: none; padding-left: 0; }
+    .form-container { display: none; }
 }
 </style>
 </head>
@@ -107,8 +95,21 @@ button:hover { background-color: #003366; }
         <textarea id="diagnosis" rows="2" placeholder="Diagnosis details..."></textarea>
 
         <label>Drugs</label>
-        <div id="drugContainer"></div>
-        <button type="button" onclick="addDrug()">+ Add Drug</button>
+        <table class="drug-table" id="drugTable">
+            <thead>
+                <tr>
+                    <th>Drug Name</th>
+                    <th>Dose</th>
+                    <th>Times/Day</th>
+                    <th>Duration</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Dynamic rows -->
+            </tbody>
+        </table>
+        <button type="button" onclick="addDrugRow()">+ Add Drug</button>
 
         <button type="button" onclick="clearForm()">Clear Form</button>
         <button type="button" onclick="printPrescription()">Print Prescription</button>
@@ -132,7 +133,7 @@ button:hover { background-color: #003366; }
 </div>
 
 <script>
-// Functions
+// Update preview
 function updatePreview() {
     document.getElementById('docNamePreview').innerText = document.getElementById('doctorName').value || 'Dr. Name, Credentials';
     document.getElementById('clinicPreview').innerText = document.getElementById('clinicName').value || 'Clinic / Hospital';
@@ -144,48 +145,39 @@ function updatePreview() {
 
     const drugsPreview = document.getElementById('drugsPreview');
     drugsPreview.innerHTML = '';
-    document.querySelectorAll('.drug-row input').forEach(drugInput => {
-        if (drugInput.value.trim() !== '') {
+    document.querySelectorAll('#drugTable tbody tr').forEach(row => {
+        const cells = row.querySelectorAll('input');
+        if(cells[0].value.trim() !== ''){
             const li = document.createElement('li');
-            li.innerText = drugInput.value;
+            li.innerHTML = `${cells[0].value}<br>Dose: ${cells[1].value || '-'}<br>Times/Day: ${cells[2].value || '-'}<br>Duration: ${cells[3].value || '-'}`;
             drugsPreview.appendChild(li);
         }
     });
 }
 
-// Add drug row
-function addDrug(value='') {
-    const container = document.getElementById('drugContainer');
-    const row = document.createElement('div');
-    row.className = 'drug-row';
-    const input = document.createElement('input');
-    input.type = 'text';
-    input.placeholder = 'Drug name, dose, instructions';
-    input.value = value;
-    input.addEventListener('input', updatePreview);
-    const removeBtn = document.createElement('button');
-    removeBtn.type = 'button';
-    removeBtn.className = 'remove-drug';
-    removeBtn.innerText = 'Remove';
-    removeBtn.onclick = () => { row.remove(); updatePreview(); };
-    row.appendChild(input);
-    row.appendChild(removeBtn);
-    container.appendChild(row);
-    input.focus();
-    updatePreview();
+// Add new drug row
+function addDrugRow() {
+    const tbody = document.querySelector('#drugTable tbody');
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+        <td><input type="text" placeholder="Drug Name" oninput="updatePreview()"></td>
+        <td><input type="text" placeholder="Dose" oninput="updatePreview()"></td>
+        <td><input type="text" placeholder="Times/Day" oninput="updatePreview()"></td>
+        <td><input type="text" placeholder="Duration" oninput="updatePreview()"></td>
+        <td><button type="button" class="remove-drug" onclick="this.closest('tr').remove(); updatePreview();">Remove</button></td>
+    `;
+    tbody.appendChild(tr);
 }
 
 // Clear form
 function clearForm() {
     document.querySelectorAll('input, textarea, select').forEach(el => el.value = '');
-    document.getElementById('drugContainer').innerHTML = '';
+    document.querySelector('#drugTable tbody').innerHTML = '';
     updatePreview();
 }
 
-// Print
-function printPrescription() {
-    window.print();
-}
+// Print prescription
+function printPrescription() { window.print(); }
 
 // Initialize
 updatePreview();

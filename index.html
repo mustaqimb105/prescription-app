@@ -3,134 +3,92 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Desktop Prescription Maker</title>
+<title>Prescription Maker</title>
 <style>
 body {
     font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background: #f2f2f2;
+    margin:0;
+    padding:0;
+    background:#f2f2f2;
 }
 .container {
-    display: flex;
-    height: 100vh;
-    overflow: hidden;
+    display:flex;
+    height:100vh;
+    overflow:hidden;
 }
-
 /* Left Entry Panel */
 .entry-panel {
-    width: 50%;
-    background: #fff;
-    padding: 20px;
-    overflow-y: auto;
-    box-sizing: border-box;
-    border-right: 2px solid #ccc;
+    width:50%;
+    background:#fff;
+    padding:20px;
+    box-sizing:border-box;
+    overflow-y:auto;
+    border-right:2px solid #ccc;
 }
-.entry-panel h2 {
-    margin-top: 0;
-}
-.entry-panel label {
-    display: block;
-    margin-top: 10px;
-    font-weight: bold;
-}
+.entry-panel h2{margin-top:0;}
+.entry-panel label{display:block;margin-top:10px;font-weight:bold;}
 .entry-panel input, .entry-panel select, .entry-panel textarea {
-    width: 100%;
-    padding: 8px;
-    margin-top: 5px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    box-sizing: border-box;
+    width:100%;
+    padding:8px;
+    margin-top:5px;
+    border-radius:5px;
+    border:1px solid #ccc;
+    box-sizing:border-box;
 }
-.entry-panel textarea {
-    resize: vertical;
-}
+.entry-panel textarea{resize:vertical;}
 .entry-panel button {
-    padding: 10px 15px;
-    margin: 10px 5px 0 0;
-    border: none;
-    background: #004080;
-    color: #fff;
-    border-radius: 5px;
-    cursor: pointer;
+    padding:10px 15px;
+    margin:10px 5px 0 0;
+    border:none;
+    background:#004080;
+    color:#fff;
+    border-radius:5px;
+    cursor:pointer;
 }
-.entry-panel button:hover {
-    background: #003366;
-}
+.entry-panel button:hover {background:#003366;}
 
 /* Right Preview Panel */
 .preview-panel {
-    width: 50%;
-    background: #fff;
-    padding: 20px;
-    box-sizing: border-box;
-    overflow-y: auto;
+    width:50%;
+    background:#fff;
+    padding:20px;
+    box-sizing:border-box;
+    overflow-y:auto;
 }
+
+/* Prescription Styling */
 .prescription {
-    width: 100%;
-    min-height: 29.7cm;
-    padding: 40px 40px;
-    background: #fff;
-    box-sizing: border-box;
-    color: #000;
-    line-height: 1.5;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
+    width:100%;
+    min-height:29.7cm;
+    display:flex;
+    flex-direction:column;
+    justify-content:flex-start;
+    box-sizing:border-box;
+    background:#fff;
+    line-height:1.5;
 }
 .header {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 20px;
+    display:flex;
+    justify-content:space-between;
+    margin-bottom:20px;
 }
-.header h3, .header h4 {
-    margin: 2px 0;
-}
-.patient-info {
-    margin-bottom: 20px;
-}
-.patient-info div.row {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-}
-.content {
-    display: flex;
-    gap: 20px;
-    flex: 1;
-    border-top: 2px solid #000;
-    padding-top: 20px;
-}
-.left {
-    width: 33%;
-    padding-right: 10px;
-    border-right: 2px solid #000;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-.left div {
-    margin-bottom: 20px;
-    flex: 1;
-}
-.right {
-    width: 67%;
-    padding-left: 10px;
-}
-.right > div { font-size: 20px; }
-.signature {
-    text-align: right;
-    margin-top: 20px;
-    font-weight: bold;
-}
-.drug-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 10px;
-}
-.drug-table th, .drug-table td {
-    padding: 5px;
-    text-align: left;
+.header h3, .header h4{margin:0;}
+.patient-info {margin-bottom:20px;}
+.patient-info .row{display:flex;justify-content:space-between;width:100%;}
+.content {display:flex;gap:20px;border-top:2px solid #000;padding-top:20px;flex:1;}
+.left {width:33%;border-right:2px solid #000;display:flex;flex-direction:column;justify-content:space-between;}
+.left div{flex:1;margin-bottom:20px;}
+.right {width:67%;padding-left:10px;}
+.right > div{font-size:20px;}
+ul{padding-left:20px;margin:0;}
+.signature{text-align:right;margin-top:20px;font-weight:bold;}
+.drug-table{width:100%;border-collapse:collapse;margin-top:10px;}
+.drug-table th, .drug-table td{padding:5px;text-align:left;}
+
+@media print{
+    body *{visibility:hidden;}
+    .prescription, .prescription *{visibility:visible;}
+    .prescription{width:100%;height:29.7cm;padding:40px 60px;display:flex;flex-direction:column;}
 }
 </style>
 </head>
@@ -142,7 +100,6 @@ body {
 <div class="entry-panel">
     <h2>Patient & Prescription Entry</h2>
 
-    <!-- Patient Info -->
     <label>Patient Name</label>
     <input type="text" id="patientName" placeholder="Full Name" oninput="updatePreview()">
 
@@ -169,13 +126,11 @@ body {
     <label>Date of Prescription</label>
     <input type="date" id="prescriptionDate" onchange="updatePreview()">
 
-    <!-- Doctor & Clinic Info -->
     <label>Doctor Name & Credentials</label>
     <input type="text" id="doctorName" placeholder="Dr. A B C, MBBS, FCPS" oninput="updatePreview()">
     <label>Clinic / Hospital</label>
     <input type="text" id="clinicName" placeholder="City Clinic" oninput="updatePreview()">
 
-    <!-- Prescription Details -->
     <label>Chief Complaints</label>
     <textarea id="complaints" rows="2" oninput="updatePreview()"></textarea>
     <label>On Examination</label>
@@ -185,7 +140,6 @@ body {
     <label>Diagnosis</label>
     <textarea id="diagnosis" rows="2" oninput="updatePreview()"></textarea>
 
-    <!-- Drugs -->
     <label>Drugs</label>
     <table class="drug-table" id="drugTable">
         <thead>

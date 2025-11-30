@@ -3,167 +3,164 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Medicine Prescription Tool</title>
-
+<title>Prescription Maker</title>
 <style>
-:root {--bg:#ffffff; --text:#000000; --card-bg:#f5f7ff; --accent:#003d99;}
-body.dark{--bg:#0f141a;--text:#e6e6e6;--card-bg:#1c2530;--accent:#4d9aff;}
-body{margin:0;padding:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--text);transition:.3s;}
-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;padding:15px 20px;background:var(--accent);color:white;}
-header h1{margin:5px 0;font-size:1.5rem;}
-.controls{display:flex;flex-wrap:wrap;gap:10px;padding:15px 20px;}
-input,select{padding:10px;font-size:1rem;border-radius:8px;border:1px solid #999;flex:1;min-width:180px;}
-#mainContainer{display:flex;flex-wrap:wrap;gap:20px;padding:20px;}
-#results{flex:2;display:grid;gap:15px;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));}
-.card{background:var(--card-bg);padding:15px;border-radius:10px;border-left:5px solid var(--accent);box-shadow:0 2px 5px rgba(0,0,0,.1);}
-.card b{font-size:1.1rem;}
-.prescriptionPanel{flex:1;background:var(--card-bg);padding:15px;border-radius:10px;min-width:250px;max-width:400px;height:max-content;}
-.prescriptionPanel h2{text-align:center;margin-top:0;}
-.prescriptionPanel input,.prescriptionPanel textarea{width:100%;padding:8px;margin:5px 0;border-radius:6px;border:1px solid #999;}
-.prescriptionList{margin-top:10px;list-style-type:disc;padding-left:20px;}
-button{padding:6px 12px;margin-top:6px;border:none;border-radius:6px;cursor:pointer;background:var(--accent);color:white;}
-button:hover{opacity:0.9;}
-.switch{position:relative;display:inline-block;width:45px;height:22px;}
-.switch input{display:none;}
-.slider{position:absolute;cursor:pointer;background-color:#ccc;border-radius:34px;top:0;left:0;right:0;bottom:0;transition:.4s;}
-.slider:before{position:absolute;content:"";height:16px;width:16px;left:3px;bottom:3px;background-color:white;border-radius:50%;transition:.4s;}
-input:checked + .slider{background-color:var(--accent);}
-input:checked + .slider:before{transform:translateX(22px);}
-@media(max-width:1024px){#mainContainer{flex-direction:column;}}
-@media(max-width:768px){.controls{flex-direction:column;}input,select{width:100%;}}
-</style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background: #f2f2f2;
+    }
+    .container {
+        display: flex;
+        flex-wrap: wrap;
+        padding: 10px;
+        gap: 10px;
+    }
+    .form-container, .preview-container {
+        background: #fff;
+        padding: 15px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        border-radius: 8px;
+        flex: 1 1 300px;
+    }
+    .form-container {
+        min-width: 280px;
+    }
+    .preview-container {
+        min-width: 280px;
+        overflow-x: auto;
+    }
+    h2 { margin-top: 0; color: #004080; }
+    label { display: block; margin-top: 10px; font-weight: bold; }
+    input, textarea {
+        width: 100%;
+        padding: 8px;
+        margin-top: 3px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        box-sizing: border-box;
+    }
+    textarea { resize: vertical; }
+    button {
+        margin-top: 15px;
+        padding: 10px 15px;
+        border: none;
+        background-color: #004080;
+        color: white;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    button:hover { background-color: #003366; }
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    /* Prescription styling */
+    .prescription {
+        width: 100%;
+        max-width: 600px;
+        margin: 0 auto;
+        background: #fff;
+        padding: 20px;
+        border: 2px solid #004080;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        color: #000;
+    }
+    .prescription h3, .prescription h4 {
+        margin: 5px 0;
+        text-align: center;
+    }
+    .block { margin: 10px 0; }
+    .flex-row { display: flex; justify-content: space-between; }
+    .signature { text-align: right; margin-top: 40px; }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .container { flex-direction: column; }
+    }
+</style>
 </head>
 <body>
-<header>
-<h1>Medicine Prescription Tool</h1>
-<div class="theme-toggle">
-<label class="switch"><input type="checkbox" id="themeSwitch"><span class="slider"></span></label>
-<span>Dark</span>
-</div>
-</header>
 
-<section class="controls">
-<input type="text" id="searchBox" placeholder="Search medicines...">
-<select id="filterGeneric"><option value="">Filter by Generic</option></select>
-<select id="filterManufacturer"><option value="">Filter by Manufacturer</option></select>
-</section>
+<div class="container">
+    <!-- Data Entry Form -->
+    <div class="form-container">
+        <h2>Prescription Maker</h2>
+        <label>Doctor Name & Credentials</label>
+        <input type="text" id="doctorName" placeholder="Dr. A B C, MBBS, FCPS">
+        
+        <label>Clinic / Hospital</label>
+        <input type="text" id="clinicName" placeholder="City Clinic">
 
-<div id="mainContainer">
-<div id="results"></div>
+        <label>Patient Name</label>
+        <input type="text" id="patientName" placeholder="Patient Name">
 
-<div class="prescriptionPanel">
-<h2>Prescription</h2>
-<input type="text" id="patientName" placeholder="Patient Name">
-<input type="text" id="doctorName" placeholder="Doctor Name">
-<textarea id="notes" placeholder="Instructions / Notes"></textarea>
-<ul id="prescriptionList" class="prescriptionList"></ul>
-<button onclick="printPrescription()">Print Prescription</button>
-</div>
+        <label>Age / Gender</label>
+        <input type="text" id="ageGender" placeholder="25 / M">
+
+        <label>Complaints</label>
+        <textarea id="complaints" rows="3" placeholder="Patient complaints..."></textarea>
+
+        <label>Examination / Findings</label>
+        <textarea id="examination" rows="3" placeholder="O/E..."></textarea>
+
+        <label>Investigations</label>
+        <textarea id="investigations" rows="2" placeholder="Lab tests..."></textarea>
+
+        <label>Prescription / Medicines</label>
+        <textarea id="medicines" rows="4" placeholder="Rx..."></textarea>
+
+        <label>Doctor Notes</label>
+        <textarea id="notes" rows="2" placeholder="Any instructions..."></textarea>
+
+        <button onclick="clearForm()">Clear Form</button>
+    </div>
+
+    <!-- Prescription Preview -->
+    <div class="preview-container">
+        <div class="prescription" id="prescriptionPreview">
+            <h3 id="docNamePreview">Dr. Name, Credentials</h3>
+            <h4 id="clinicPreview">Clinic / Hospital</h4>
+            <hr>
+            <div class="block"><strong>Patient:</strong> <span id="patientPreview">Name</span></div>
+            <div class="block"><strong>Age / Gender:</strong> <span id="ageGenderPreview">--</span></div>
+            <div class="block"><strong>Complaints:</strong> <span id="complaintsPreview">--</span></div>
+            <div class="block"><strong>Examination / Findings:</strong> <span id="examinationPreview">--</span></div>
+            <div class="block"><strong>Investigations:</strong> <span id="investigationsPreview">--</span></div>
+            <div class="block"><strong>Prescription / Medicines:</strong> <span id="medicinesPreview">--</span></div>
+            <div class="block"><strong>Notes:</strong> <span id="notesPreview">--</span></div>
+            <div class="signature">Doctor Signature</div>
+        </div>
+    </div>
 </div>
 
 <script>
-let medicines=[], generics=[], manufacturers=[];
-const files=[
-    {name:"generic", target:generics},
-    {name:"manufacturer", target:manufacturers},
-    {name:"medicine", target:medicines}
-];
-let loadCount=0;
-files.forEach(file=>{
-    Papa.parse(`data/${file.name}.csv`,{download:true,header:true,skipEmptyLines:true,complete:function(results){
-        file.target.push(...results.data); 
-        loadCount++; 
-        if(loadCount===files.length) initApp();
-    }});
+// Function to update preview
+function updatePreview() {
+    document.getElementById('docNamePreview').innerText = document.getElementById('doctorName').value || 'Dr. Name, Credentials';
+    document.getElementById('clinicPreview').innerText = document.getElementById('clinicName').value || 'Clinic / Hospital';
+    document.getElementById('patientPreview').innerText = document.getElementById('patientName').value || '--';
+    document.getElementById('ageGenderPreview').innerText = document.getElementById('ageGender').value || '--';
+    document.getElementById('complaintsPreview').innerText = document.getElementById('complaints').value || '--';
+    document.getElementById('examinationPreview').innerText = document.getElementById('examination').value || '--';
+    document.getElementById('investigationsPreview').innerText = document.getElementById('investigations').value || '--';
+    document.getElementById('medicinesPreview').innerText = document.getElementById('medicines').value || '--';
+    document.getElementById('notesPreview').innerText = document.getElementById('notes').value || '--';
+}
+
+// Attach input event listeners for live update
+document.querySelectorAll('input, textarea').forEach(el => {
+    el.addEventListener('input', updatePreview);
 });
 
-function initApp(){
-    populateFilters();
-    displayResults(medicines);
+// Clear form
+function clearForm() {
+    document.querySelectorAll('input, textarea').forEach(el => el.value = '');
+    updatePreview();
 }
 
-function mapField(list,idField,nameField,value){
-    const item = list.find(x => x[idField] === value);
-    return item ? item[nameField] : "N/A";
-}
-
-function populateFilters(){
-    populateSelect("filterGeneric",generics,"generic name");
-    populateSelect("filterManufacturer",manufacturers,"manufacturer name");
-}
-
-function populateSelect(selectId,data,nameField){
-    const select=document.getElementById(selectId);
-    [...new Set(data.map(d=>d[nameField]).filter(Boolean))].sort().forEach(v=>{
-        select.innerHTML+=`<option value="${v}">${v}</option>`;
-    });
-}
-
-// Event listeners
-document.getElementById("searchBox").addEventListener("input", filterData);
-["filterGeneric","filterManufacturer"].forEach(id=>document.getElementById(id).addEventListener("change",filterData));
-
-function filterData(){
-    const q=document.getElementById("searchBox").value.toLowerCase();
-    const gen=document.getElementById("filterGeneric").value.toLowerCase();
-    const man=document.getElementById("filterManufacturer").value.toLowerCase();
-    const filtered=medicines.filter(m=>{
-        const medicineName = (m["brand name"]||"").toLowerCase();
-        const genericName = mapField(generics,"generic id","generic name",m["generic"]).toLowerCase();
-        const manufacturerName = mapField(manufacturers,"manufacturer id","manufacturer name",m["manufacturer"]).toLowerCase();
-        return (medicineName.includes(q)||genericName.includes(q)||manufacturerName.includes(q))
-            &&(gen===""||genericName===gen)
-            &&(man===""||manufacturerName===man);
-    });
-    displayResults(filtered);
-}
-
-function displayResults(data){
-    const div=document.getElementById("results");
-    if(!data.length){ div.innerHTML="<p>No results found.</p>"; return; }
-    div.innerHTML=data.map(m=>{
-        const medicineName = m["brand name"] || "Unknown";
-        const genericName = mapField(generics,"generic id","generic name",m["generic"]);
-        const manufacturerName = mapField(manufacturers,"manufacturer id","manufacturer name",m["manufacturer"]);
-        return `<div class="card">
-            <b>${medicineName}</b><br>
-            Generic: ${genericName}<br>
-            Manufacturer: ${manufacturerName}<br>
-            <button onclick="addPrescription('${medicineName}')">Add</button>
-        </div>`;
-    }).join('');
-}
-
-// Prescription logic
-let prescriptionList=[];
-function addPrescription(name){
-    if(prescriptionList.includes(name)) return;
-    prescriptionList.push(name);
-    renderPrescription();
-}
-
-function renderPrescription(){
-    const ul=document.getElementById("prescriptionList");
-    ul.innerHTML=prescriptionList.map(name=>`<li>${name}</li>`).join('');
-}
-
-function printPrescription(){
-    const patient=document.getElementById("patientName").value||"N/A";
-    const doctor=document.getElementById("doctorName").value||"N/A";
-    const notes=document.getElementById("notes").value||"";
-    let content=`<h2 style="text-align:center;">Prescription</h2>
-        <p><b>Patient:</b> ${patient}<br><b>Doctor:</b> ${doctor}</p>
-        <ul>${prescriptionList.map(m=>`<li>${m}</li>`).join('')}</ul>
-        <p><b>Notes:</b> ${notes}</p>`;
-    const win=window.open("","PRINT","height=600,width=800");
-    win.document.write(`<html><head><title>Prescription</title></head><body>${content}</body></html>`);
-    win.document.close(); win.focus(); win.print(); win.close();
-}
-
-// Dark mode toggle
-document.getElementById("themeSwitch").addEventListener("change",()=>{ document.body.classList.toggle("dark"); });
+// Initialize preview
+updatePreview();
 </script>
+
 </body>
 </html>

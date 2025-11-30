@@ -3,18 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bangladesh Medicine Presheet</title>
+    <title>Bangladesh Medicine Database</title>
 
     <link rel="stylesheet" href="style.css">
-
-    <!-- CSV Parser -->
+    <!-- PapaParse for CSV parsing -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
 </head>
-
 <body>
     <header>
         <h1>Bangladesh Medicine Database</h1>
-
         <div class="theme-toggle">
             <label class="switch">
                 <input type="checkbox" id="themeSwitch">
@@ -25,15 +22,12 @@
     </header>
 
     <section class="controls">
-        <input type="text" id="searchBox" placeholder="Search medicine, generic, or company...">
-
-        <select id="filterGeneric">
-            <option value="">Filter by Generic</option>
-        </select>
-
-        <select id="filterCompany">
-            <option value="">Filter by Company</option>
-        </select>
+        <input type="text" id="searchBox" placeholder="Search medicines...">
+        
+        <select id="filterGeneric"><option value="">Filter by Generic</option></select>
+        <select id="filterManufacturer"><option value="">Filter by Manufacturer</option></select>
+        <select id="filterDrugClass"><option value="">Filter by Drug Class</option></select>
+        <select id="filterDosageForm"><option value="">Filter by Dosage Form</option></select>
     </section>
 
     <section id="results" class="results"></section>

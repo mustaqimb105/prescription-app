@@ -3,23 +3,22 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Prescription App Full Layout</title>
+<title>Integrated Prescription App</title>
 <style>
 body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f2f2f2; }
 .container { max-width:1200px; margin:0 auto; padding:20px; }
-button { padding:10px 15px; margin:5px; border:none; background:#004080; color:#fff; border-radius:5px; cursor:pointer; }
-button:hover { background:#003366; }
-.page { display:none; background:#fff; padding:20px; border-radius:8px; box-shadow:0 2px 5px rgba(0,0,0,0.1); }
-.page.active { display:block; }
 input, select, textarea { padding:8px; border-radius:5px; border:1px solid #ccc; margin-top:5px; width:100%; box-sizing:border-box; }
 textarea { resize: vertical; }
+button { padding:10px 15px; margin:5px; border:none; background:#004080; color:#fff; border-radius:5px; cursor:pointer; }
+button:hover { background:#003366; }
+
 .patient-row { display:flex; gap:10px; margin-top:10px; }
 .patient-row > div { flex:1; }
 
-.drug-table { width:100%; border-collapse:collapse; margin-top:5px; }
+.drug-table { width:100%; border-collapse:collapse; margin-top:10px; }
 .drug-table th, .drug-table td { padding:5px; text-align:left; }
 
-.prescription { width:100%; min-height:29.7cm; padding:40px 60px; background:#fff; box-sizing:border-box; color:#000; line-height:1.5; }
+.prescription { width:100%; min-height:29.7cm; padding:40px 60px; background:#fff; box-sizing:border-box; color:#000; line-height:1.5; margin-top:30px; }
 .header { text-align:center; margin-bottom:20px; }
 .header h3, .header h4 { margin:2px 0; }
 .patient-info { margin-bottom:20px; }
@@ -28,136 +27,117 @@ textarea { resize: vertical; }
 .right { width:67%; padding-left:10px; }
 .signature { text-align:right; margin-top:80px; font-weight:bold; }
 
-@media (max-width:768px){ .container{padding:10px;} .patient-row { flex-direction: column; } .content { flex-direction: column; } .left,.right{width:100%; border-right:none; padding:0;} }
+@media (max-width:768px){ .patient-row { flex-direction: column; } .content { flex-direction: column; } .left,.right{width:100%; border-right:none; padding:0;} }
 
 @media print{
     body *{visibility:hidden;}
     .prescription, .prescription *{visibility:visible;}
     .prescription{width:100%; height:29.7cm; padding:40px 60px; box-shadow:none;}
     .drug-table, .drug-table th, .drug-table td{border:none; padding:0;}
+    .no-print{display:none;}
 }
 </style>
 </head>
 <body>
 
 <div class="container">
-    <!-- Navigation -->
-    <div>
-        <button onclick="showPage('homePage')">Home</button>
-        <button onclick="showPage('patientPage')">Patient Entry</button>
-        <button onclick="showPage('prescriptionPage')">Prescription Entry</button>
-    </div>
+    <h2 class="no-print">Patient & Prescription Entry</h2>
 
-    <!-- Page 1: Home -->
-    <div id="homePage" class="page active">
-        <h2>Welcome to Prescription App</h2>
-        <p>Use navigation buttons to enter patient details and create prescriptions.</p>
-    </div>
+    <!-- Patient Info -->
+    <label>Patient Name</label>
+    <input type="text" id="patientName" placeholder="Full Name">
 
-    <!-- Page 2: Patient Entry -->
-    <div id="patientPage" class="page">
-        <h2>Patient Data Entry</h2>
-        <label>Patient Name</label>
-        <input type="text" id="patientName" placeholder="Full Name">
-
-        <div class="patient-row">
-            <div>
-                <label>Age</label>
-                <input type="number" id="patientAge" placeholder="Age">
-            </div>
-            <div>
-                <label>Gender</label>
-                <select id="patientGender">
-                    <option value="">Select Gender</option>
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                    <option value="Other">Other</option>
-                </select>
-            </div>
-            <div>
-                <label>Weight (kg)</label>
-                <input type="number" id="patientWeight" placeholder="Weight">
-            </div>
+    <div class="patient-row">
+        <div>
+            <label>Age</label>
+            <input type="number" id="patientAge" placeholder="Age">
         </div>
-
-        <label>Date of Birth</label>
-        <input type="date" id="dob" onchange="calculateDOBAge()">
-        <label>Date of Prescription</label>
-        <input type="date" id="prescriptionDate">
-
-        <button onclick="savePatientInfo()">Save Patient Info</button>
-        <div id="savedInfo" style="margin-top:20px; font-weight:bold;"></div>
-    </div>
-
-    <!-- Page 3: Prescription Entry -->
-    <div id="prescriptionPage" class="page">
-        <h2>Prescription Entry</h2>
-        <label>Doctor Name & Credentials</label>
-        <input type="text" id="doctorName" placeholder="Dr. A B C, MBBS, FCPS">
-        <label>Clinic / Hospital</label>
-        <input type="text" id="clinicName" placeholder="City Clinic">
-
-        <label>Chief Complaints</label>
-        <textarea id="complaints" rows="2"></textarea>
-        <label>On Examination</label>
-        <textarea id="examination" rows="2"></textarea>
-        <label>Investigations</label>
-        <textarea id="investigations" rows="2"></textarea>
-        <label>Diagnosis</label>
-        <textarea id="diagnosis" rows="2"></textarea>
-
-        <label>Drugs</label>
-        <table class="drug-table" id="drugTable">
-            <thead>
-                <tr>
-                    <th>Drug Name</th>
-                    <th>Dose</th>
-                    <th>Times/Day</th>
-                    <th>Duration</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-        <button type="button" onclick="addDrugRow()">+ Add Drug</button>
-        <button type="button" onclick="updatePreview()">Update Preview</button>
-        <button type="button" onclick="printPrescription()">Print Prescription</button>
-
-        <!-- Preview -->
-        <div class="prescription" id="prescriptionPreview">
-            <div class="header">
-                <h3 id="docNamePreview">Dr. Name, Credentials</h3>
-                <h4 id="clinicPreview">Clinic / Hospital</h4>
-            </div>
-            <div class="patient-info">
-                <strong>Date:</strong> <span id="datePreview">--</span><br>
-                <strong>Patient:</strong> <span id="patientPreview">Name</span><br>
-                <strong>DOB / Age / Gender / Weight:</strong> <span id="dobAgeGenderWeightPreview">--</span>
-            </div>
-            <div class="content">
-                <div class="left">
-                    <div><strong>Chief Complaints:</strong> <span id="complaintsPreview">--</span></div>
-                    <div><strong>On Examination:</strong> <span id="examinationPreview">--</span></div>
-                    <div><strong>Investigations:</strong> <span id="investigationsPreview">--</span></div>
-                </div>
-                <div class="right">
-                    <div><strong>Prescription / Medicines:</strong>
-                        <ul id="drugsPreview"></ul>
-                    </div>
-                </div>
-            </div>
-            <div class="signature">Doctor Signature</div>
+        <div>
+            <label>Gender</label>
+            <select id="patientGender">
+                <option value="">Select Gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+            </select>
+        </div>
+        <div>
+            <label>Weight (kg)</label>
+            <input type="number" id="patientWeight" placeholder="Weight">
         </div>
     </div>
+
+    <label class="no-print">Date of Birth (optional for auto age)</label>
+    <input type="date" id="dob" class="no-print" onchange="calculateDOBAge()">
+
+    <label>Date of Prescription</label>
+    <input type="date" id="prescriptionDate">
+
+    <!-- Doctor Info -->
+    <label>Doctor Name & Credentials</label>
+    <input type="text" id="doctorName" placeholder="Dr. A B C, MBBS, FCPS">
+    <label>Clinic / Hospital</label>
+    <input type="text" id="clinicName" placeholder="City Clinic">
+
+    <!-- Prescription Details -->
+    <label>Chief Complaints</label>
+    <textarea id="complaints" rows="2"></textarea>
+    <label>On Examination</label>
+    <textarea id="examination" rows="2"></textarea>
+    <label>Investigations</label>
+    <textarea id="investigations" rows="2"></textarea>
+    <label>Diagnosis</label>
+    <textarea id="diagnosis" rows="2"></textarea>
+
+    <!-- Drugs -->
+    <label>Drugs</label>
+    <table class="drug-table" id="drugTable">
+        <thead>
+            <tr>
+                <th>Drug Name</th>
+                <th>Dose</th>
+                <th>Times/Day</th>
+                <th>Duration</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    <button type="button" onclick="addDrugRow()">+ Add Drug</button>
+    <button type="button" onclick="updatePreview()">Update Preview</button>
+    <button type="button" onclick="printPrescription()">Print Prescription</button>
+
+    <!-- Prescription Preview -->
+    <div class="prescription" id="prescriptionPreview">
+        <div class="header">
+            <h3 id="docNamePreview">Dr. Name, Credentials</h3>
+            <h4 id="clinicPreview">Clinic / Hospital</h4>
+        </div>
+        <div class="patient-info">
+            <strong>Date:</strong> <span id="datePreview">--</span><br>
+            <strong>Patient:</strong> <span id="patientPreview">Name</span><br>
+            <strong>Age / Gender / Weight:</strong> <span id="dobAgeGenderWeightPreview">--</span>
+        </div>
+        <div class="content">
+            <div class="left">
+                <div><strong>Chief Complaints:</strong> <span id="complaintsPreview">--</span></div>
+                <div><strong>On Examination:</strong> <span id="examinationPreview">--</span></div>
+                <div><strong>Investigations:</strong> <span id="investigationsPreview">--</span></div>
+            </div>
+            <div class="right">
+                <div><strong>Prescription / Medicines:</strong>
+                    <ul id="drugsPreview"></ul>
+                </div>
+            </div>
+        </div>
+        <div class="signature">Doctor Signature</div>
+    </div>
+
 </div>
 
 <script>
-// Navigation
-function showPage(pageId){
-    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-    document.getElementById(pageId).classList.add('active');
-}
+document.getElementById('prescriptionDate').valueAsDate=new Date();
 
-// Patient Info
+// Auto-calculate age from DOB
 function calculateDOBAge(){
     const dob=document.getElementById('dob').value;
     if(!dob) return;
@@ -169,31 +149,32 @@ function calculateDOBAge(){
     document.getElementById('patientAge').value=age;
 }
 
-function savePatientInfo(){
-    const name=document.getElementById('patientName').value||'--';
-    const age=document.getElementById('patientAge').value||'--';
-    const gender=document.getElementById('patientGender').value||'--';
-    const weight=document.getElementById('patientWeight').value||'--';
-    document.getElementById('savedInfo').innerText=`Saved: ${name} | Age: ${age} | Gender: ${gender} | Weight: ${weight}`;
+// Drugs
+function addDrugRow(){
+    const tbody=document.querySelector('#drugTable tbody');
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+        <td><input type="text" placeholder="Drug Name" oninput="updatePreview()"></td>
+        <td><input type="text" placeholder="Dose" oninput="updatePreview()"></td>
+        <td><input type="text" placeholder="Times/Day" oninput="updatePreview()"></td>
+        <td><input type="text" placeholder="Duration" oninput="updatePreview()"></td>
+    `;
+    tbody.appendChild(tr);
 }
 
-// Prescription
-document.getElementById('prescriptionDate').valueAsDate=new Date();
-
+// Update Preview
 function updatePreview(){
     document.getElementById('docNamePreview').innerText=document.getElementById('doctorName').value||'Dr. Name, Credentials';
     document.getElementById('clinicPreview').innerText=document.getElementById('clinicName').value||'Clinic / Hospital';
 
     const name=document.getElementById('patientName').value||'--';
-    const dob=document.getElementById('dob').value||'--';
     const age=document.getElementById('patientAge').value||'--';
     const gender=document.getElementById('patientGender').value||'--';
     const weight=document.getElementById('patientWeight').value||'--';
     document.getElementById('patientPreview').innerText=name;
-    document.getElementById('dobAgeGenderWeightPreview').innerText=`${dob} / ${age} yr / ${gender} / ${weight} kg`;
+    document.getElementById('dobAgeGenderWeightPreview').innerText=`${age} yr / ${gender} / ${weight} kg`;
 
     document.getElementById('datePreview').innerText=document.getElementById('prescriptionDate').value||'--';
-
     document.getElementById('complaintsPreview').innerText=document.getElementById('complaints').value||'--';
     document.getElementById('examinationPreview').innerText=document.getElementById('examination').value||'--';
     document.getElementById('investigationsPreview').innerText=document.getElementById('investigations').value||'--';
@@ -211,21 +192,8 @@ function updatePreview(){
     });
 }
 
-function addDrugRow(){
-    const tbody=document.querySelector('#drugTable tbody');
-    const tr=document.createElement('tr');
-    tr.innerHTML=`
-        <td><input type="text" placeholder="Drug Name" oninput="updatePreview()"></td>
-        <td><input type="text" placeholder="Dose" oninput="updatePreview()"></td>
-        <td><input type="text" placeholder="Times/Day" oninput="updatePreview()"></td>
-        <td><input type="text" placeholder="Duration" oninput="updatePreview()"></td>
-    `;
-    tbody.appendChild(tr);
-}
-
 function printPrescription(){ window.print(); }
 
 </script>
-
 </body>
 </html>

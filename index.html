@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Full Prescription Maker</title>
+<title>Professional Prescription</title>
 <style>
 body {
     font-family: Arial, sans-serif;
@@ -34,33 +34,34 @@ textarea { resize: vertical; }
 button { margin-top: 10px; padding: 8px 12px; border: none; background-color: #004080; color: white; border-radius: 5px; cursor: pointer; }
 button:hover { background-color: #003366; }
 
+.drug-table { width: 100%; border-collapse: collapse; margin-top: 5px; }
+.drug-table th, .drug-table td { padding: 5px; text-align: left; }
+
 .prescription {
     width: 100%;
-    min-height: 29.7cm; /* A4 height */
+    min-height: 29.7cm; /* A4 */
     padding: 40px 60px;
     background: #fff;
-    border: 2px solid #004080;
-    border-radius: 5px;
     box-sizing: border-box;
     color: #000;
     line-height: 1.5;
 }
-.prescription h3, .prescription h4 { margin: 5px 0; text-align: center; }
-.block { margin: 12px 0; }
+.header { text-align: center; margin-bottom: 20px; }
+.header h3, .header h4 { margin: 2px 0; }
+.patient-info { margin-bottom: 20px; }
+.content { display: flex; gap: 20px; }
+.left { width: 33%; }
+.right { width: 67%; }
 .signature { text-align: right; margin-top: 80px; font-weight: bold; }
 
-.drug-table { width: 100%; border-collapse: collapse; margin-top: 5px; }
-.drug-table th, .drug-table td { border: 1px solid #ccc; padding: 5px; text-align: left; }
-.remove-drug { background-color: #cc0000; color: #fff; }
-
-@media (max-width: 768px) { .container { flex-direction: column; } }
+@media (max-width: 768px) { .container { flex-direction: column; } .content { flex-direction: column; } .left, .right { width: 100%; } }
 
 @media print {
     body * { visibility: hidden; }
     .prescription, .prescription * { visibility: visible; }
-    .prescription { margin: 0; width: 100%; height: 29.7cm; box-shadow: none; border: 1px solid #000; padding: 40px 60px; }
+    .prescription { width: 100%; height: 29.7cm; padding: 40px 60px; box-shadow: none; }
     .form-container { display: none; }
-    ul { list-style: none; padding-left: 0; }
+    .drug-table, .drug-table th, .drug-table td { border: none; padding: 0; }
 }
 </style>
 </head>
@@ -72,16 +73,13 @@ button:hover { background-color: #003366; }
         <h2>Prescription Maker</h2>
         <label>Doctor Name & Credentials</label>
         <input type="text" id="doctorName" placeholder="Dr. A B C, MBBS, FCPS">
-        
         <label>Clinic / Hospital</label>
         <input type="text" id="clinicName" placeholder="City Clinic">
 
         <label>Patient Name</label>
         <input type="text" id="patientName" placeholder="Patient Name">
-
         <label>Date of Birth</label>
         <input type="date" id="dob" onchange="updatePreview()">
-
         <label>Gender</label>
         <select id="patientGender" onchange="updatePreview()">
             <option value="">Select Gender</option>
@@ -89,21 +87,17 @@ button:hover { background-color: #003366; }
             <option value="Female">Female</option>
             <option value="Other">Other</option>
         </select>
-
         <label>Date of Prescription</label>
         <input type="date" id="prescriptionDate">
 
         <label>Chief Complaints</label>
-        <textarea id="complaints" rows="2" placeholder="Chief Complaints..."></textarea>
-
+        <textarea id="complaints" rows="2"></textarea>
         <label>On Examination</label>
-        <textarea id="examination" rows="2" placeholder="On Examination..."></textarea>
-
+        <textarea id="examination" rows="2"></textarea>
         <label>Investigations</label>
-        <textarea id="investigations" rows="2" placeholder="Investigations..."></textarea>
-
+        <textarea id="investigations" rows="2"></textarea>
         <label>Diagnosis</label>
-        <textarea id="diagnosis" rows="2" placeholder="Diagnosis..."></textarea>
+        <textarea id="diagnosis" rows="2"></textarea>
 
         <label>Drugs</label>
         <table class="drug-table" id="drugTable">
@@ -113,13 +107,11 @@ button:hover { background-color: #003366; }
                     <th>Dose</th>
                     <th>Times/Day</th>
                     <th>Duration</th>
-                    <th>Action</th>
                 </tr>
             </thead>
             <tbody></tbody>
         </table>
         <button type="button" onclick="addDrugRow()">+ Add Drug</button>
-
         <button type="button" onclick="clearForm()">Clear Form</button>
         <button type="button" onclick="printPrescription()">Print Prescription</button>
     </div>
@@ -127,18 +119,26 @@ button:hover { background-color: #003366; }
     <!-- Preview -->
     <div class="preview-container">
         <div class="prescription" id="prescriptionPreview">
-            <h3 id="docNamePreview">Dr. Name, Credentials</h3>
-            <h4 id="clinicPreview">Clinic / Hospital</h4>
-            <hr>
-            <div class="block"><strong>Date:</strong> <span id="datePreview">--</span></div>
-            <div class="block"><strong>Patient:</strong> <span id="patientPreview">Name</span></div>
-            <div class="block"><strong>DOB / Age / Gender:</strong> <span id="dobAgeGenderPreview">--</span></div>
-            <div class="block"><strong>Chief Complaints:</strong> <span id="complaintsPreview">--</span></div>
-            <div class="block"><strong>On Examination:</strong> <span id="examinationPreview">--</span></div>
-            <div class="block"><strong>Investigations:</strong> <span id="investigationsPreview">--</span></div>
-            <div class="block"><strong>Diagnosis:</strong> <span id="diagnosisPreview">--</span></div>
-            <div class="block"><strong>Prescription / Medicines:</strong>
-                <ul id="drugsPreview"></ul>
+            <div class="header">
+                <h3 id="docNamePreview">Dr. Name, Credentials</h3>
+                <h4 id="clinicPreview">Clinic / Hospital</h4>
+            </div>
+            <div class="patient-info">
+                <strong>Date:</strong> <span id="datePreview">--</span><br>
+                <strong>Patient:</strong> <span id="patientPreview">Name</span><br>
+                <strong>DOB / Age / Gender:</strong> <span id="dobAgeGenderPreview">--</span>
+            </div>
+            <div class="content">
+                <div class="left">
+                    <div><strong>Chief Complaints:</strong> <span id="complaintsPreview">--</span></div>
+                    <div><strong>On Examination:</strong> <span id="examinationPreview">--</span></div>
+                    <div><strong>Investigations:</strong> <span id="investigationsPreview">--</span></div>
+                </div>
+                <div class="right">
+                    <div><strong>Prescription / Medicines:</strong>
+                        <ul id="drugsPreview"></ul>
+                    </div>
+                </div>
             </div>
             <div class="signature">Doctor Signature</div>
         </div>
@@ -146,7 +146,7 @@ button:hover { background-color: #003366; }
 </div>
 
 <script>
-// Auto-set today's date
+// Set today's date
 document.getElementById('prescriptionDate').valueAsDate = new Date();
 
 function calculateAge(dob) {
@@ -198,7 +198,6 @@ function addDrugRow() {
         <td><input type="text" placeholder="Dose" oninput="updatePreview()"></td>
         <td><input type="text" placeholder="Times/Day" oninput="updatePreview()"></td>
         <td><input type="text" placeholder="Duration" oninput="updatePreview()"></td>
-        <td><button type="button" class="remove-drug" onclick="this.closest('tr').remove(); updatePreview();">Remove</button></td>
     `;
     tbody.appendChild(tr);
 }
@@ -212,7 +211,6 @@ function clearForm() {
 
 function printPrescription() { window.print(); }
 
-// Initialize
 updatePreview();
 </script>
 

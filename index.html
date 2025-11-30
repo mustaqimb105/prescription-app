@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Integrated Prescription App</title>
+<title>Prescription App with Drug Type</title>
 <style>
 body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f2f2f2; }
 .container { max-width:1200px; margin:0 auto; padding:20px; }
@@ -22,12 +22,17 @@ button:hover { background:#003366; }
 .header { text-align:center; margin-bottom:20px; }
 .header h3, .header h4 { margin:2px 0; }
 .patient-info { margin-bottom:20px; }
+.patient-info div.row { display:flex; justify-content:space-between; width:100%; }
 .content { display:flex; gap:20px; border-top:2px solid #000; padding-top:20px; min-height:400px; }
 .left { width:33%; padding-right:10px; border-right:2px solid #000; }
 .right { width:67%; padding-left:10px; }
 .signature { text-align:right; margin-top:80px; font-weight:bold; }
 
-@media (max-width:768px){ .patient-row { flex-direction: column; } .content { flex-direction: column; } .left,.right{width:100%; border-right:none; padding:0;} }
+@media (max-width:768px){ 
+    .patient-row { flex-direction: column; } 
+    .content { flex-direction: column; } 
+    .left,.right{width:100%; border-right:none; padding:0;} 
+}
 
 @media print{
     body *{visibility:hidden;}
@@ -49,10 +54,6 @@ button:hover { background:#003366; }
 
     <div class="patient-row">
         <div>
-            <label>Age</label>
-            <input type="number" id="patientAge" placeholder="Age">
-        </div>
-        <div>
             <label>Gender</label>
             <select id="patientGender">
                 <option value="">Select Gender</option>
@@ -60,6 +61,10 @@ button:hover { background:#003366; }
                 <option value="Female">Female</option>
                 <option value="Other">Other</option>
             </select>
+        </div>
+        <div>
+            <label>Age</label>
+            <input type="number" id="patientAge" placeholder="Age">
         </div>
         <div>
             <label>Weight (kg)</label>
@@ -94,6 +99,7 @@ button:hover { background:#003366; }
     <table class="drug-table" id="drugTable">
         <thead>
             <tr>
+                <th>Type</th>
                 <th>Drug Name</th>
                 <th>Dose</th>
                 <th>Times/Day</th>
@@ -115,7 +121,11 @@ button:hover { background:#003366; }
         <div class="patient-info">
             <strong>Date:</strong> <span id="datePreview">--</span><br>
             <strong>Patient:</strong> <span id="patientPreview">Name</span><br>
-            <strong>Age / Gender / Weight:</strong> <span id="dobAgeGenderWeightPreview">--</span>
+            <div class="row">
+                <span><strong>Gender:</strong> <span id="genderPreview">--</span></span>
+                <span><strong>Age:</strong> <span id="agePreview">--</span></span>
+                <span><strong>Weight:</strong> <span id="weightPreview">--</span></span>
+            </div>
         </div>
         <div class="content">
             <div class="left">
@@ -149,11 +159,22 @@ function calculateDOBAge(){
     document.getElementById('patientAge').value=age;
 }
 
-// Drugs
+// Add Drug Row
 function addDrugRow(){
     const tbody=document.querySelector('#drugTable tbody');
     const tr=document.createElement('tr');
     tr.innerHTML=`
+        <td>
+            <select oninput="updatePreview()">
+                <option value="">Select</option>
+                <option value="Tab">Tab</option>
+                <option value="Syp">Syp</option>
+                <option value="Cap">Cap</option>
+                <option value="Sup">Sup</option>
+                <option value="IV">IV</option>
+                <option value="Inf">Inf</option>
+            </select>
+        </td>
         <td><input type="text" placeholder="Drug Name" oninput="updatePreview()"></td>
         <td><input type="text" placeholder="Dose" oninput="updatePreview()"></td>
         <td><input type="text" placeholder="Times/Day" oninput="updatePreview()"></td>
@@ -172,7 +193,9 @@ function updatePreview(){
     const gender=document.getElementById('patientGender').value||'--';
     const weight=document.getElementById('patientWeight').value||'--';
     document.getElementById('patientPreview').innerText=name;
-    document.getElementById('dobAgeGenderWeightPreview').innerText=`${age} yr / ${gender} / ${weight} kg`;
+    document.getElementById('agePreview').innerText=age + ' yr';
+    document.getElementById('genderPreview').innerText=gender;
+    document.getElementById('weightPreview').innerText=weight + ' kg';
 
     document.getElementById('datePreview').innerText=document.getElementById('prescriptionDate').value||'--';
     document.getElementById('complaintsPreview').innerText=document.getElementById('complaints').value||'--';
@@ -183,17 +206,18 @@ function updatePreview(){
     const drugsPreview=document.getElementById('drugsPreview');
     drugsPreview.innerHTML='';
     document.querySelectorAll('#drugTable tbody tr').forEach(row=>{
-        const cells=row.querySelectorAll('input');
-        if(cells[0].value.trim()!==''){
+        const cells=row.querySelectorAll('input, select');
+        if(cells[1].value.trim()!==''){ // Drug Name must not be empty
+            const type = cells[0].value ? cells[0].value + ' ' : '';
             const li=document.createElement('li');
-            li.innerText=`${cells[0].value} - ${cells[1].value||'-'} - ${cells[2].value||'-'} - ${cells[3].value||'-'}`;
+            li.innerText=`${type}${cells[1].value} - ${cells[2].value||'-'} - ${cells[3].value||'-'} - ${cells[4].value||'-'}`;
             drugsPreview.appendChild(li);
         }
     });
 }
 
 function printPrescription(){ window.print(); }
-
 </script>
+
 </body>
 </html>

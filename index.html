@@ -72,12 +72,12 @@ button:hover { background-color: #003366; }
     <div class="form-container">
         <h2>Prescription Maker</h2>
         <label>Doctor Name & Credentials</label>
-        <input type="text" id="doctorName" placeholder="Dr. A B C, MBBS, FCPS">
+        <input type="text" id="doctorName" placeholder="Dr. A B C, MBBS, FCPS" oninput="updatePreview()">
         <label>Clinic / Hospital</label>
-        <input type="text" id="clinicName" placeholder="City Clinic">
+        <input type="text" id="clinicName" placeholder="City Clinic" oninput="updatePreview()">
 
         <label>Patient Name</label>
-        <input type="text" id="patientName" placeholder="Patient Name">
+        <input type="text" id="patientName" placeholder="Patient Name" oninput="updatePreview()">
         <label>Date of Birth</label>
         <input type="date" id="dob" onchange="updatePreview()">
         <label>Gender</label>
@@ -88,16 +88,16 @@ button:hover { background-color: #003366; }
             <option value="Other">Other</option>
         </select>
         <label>Date of Prescription</label>
-        <input type="date" id="prescriptionDate">
+        <input type="date" id="prescriptionDate" onchange="updatePreview()">
 
         <label>Chief Complaints</label>
-        <textarea id="complaints" rows="2"></textarea>
+        <textarea id="complaints" rows="2" oninput="updatePreview()"></textarea>
         <label>On Examination</label>
-        <textarea id="examination" rows="2"></textarea>
+        <textarea id="examination" rows="2" oninput="updatePreview()"></textarea>
         <label>Investigations</label>
-        <textarea id="investigations" rows="2"></textarea>
+        <textarea id="investigations" rows="2" oninput="updatePreview()"></textarea>
         <label>Diagnosis</label>
-        <textarea id="diagnosis" rows="2"></textarea>
+        <textarea id="diagnosis" rows="2" oninput="updatePreview()"></textarea>
 
         <label>Drugs</label>
         <table class="drug-table" id="drugTable">
@@ -107,6 +107,7 @@ button:hover { background-color: #003366; }
                     <th>Dose</th>
                     <th>Times/Day</th>
                     <th>Duration</th>
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody></tbody>
@@ -133,6 +134,7 @@ button:hover { background-color: #003366; }
                     <div><strong>Chief Complaints:</strong> <span id="complaintsPreview">--</span></div>
                     <div><strong>On Examination:</strong> <span id="examinationPreview">--</span></div>
                     <div><strong>Investigations:</strong> <span id="investigationsPreview">--</span></div>
+                    <div><strong>Diagnosis:</strong> <span id="diagnosisPreview">--</span></div>
                 </div>
                 <div class="right">
                     <div><strong>Prescription / Medicines:</strong>
@@ -198,8 +200,14 @@ function addDrugRow() {
         <td><input type="text" placeholder="Dose" oninput="updatePreview()"></td>
         <td><input type="text" placeholder="Times/Day" oninput="updatePreview()"></td>
         <td><input type="text" placeholder="Duration" oninput="updatePreview()"></td>
+        <td><button type="button" onclick="removeDrug(this)">Remove</button></td>
     `;
     tbody.appendChild(tr);
+}
+
+function removeDrug(btn) {
+    btn.parentElement.parentElement.remove();
+    updatePreview();
 }
 
 function clearForm() {

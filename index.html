@@ -3,101 +3,108 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Professional Prescription</title>
+<title>Prescription App Full Layout</title>
 <style>
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background: #f2f2f2;
-}
-.container {
-    display: flex;
-    flex-wrap: wrap;
-    padding: 10px;
-    gap: 10px;
-}
-.form-container, .preview-container {
-    background: #fff;
-    padding: 15px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    border-radius: 8px;
-    flex: 1 1 300px;
-}
-.form-container { min-width: 280px; }
-.preview-container { min-width: 280px; overflow-x: auto; }
-
-h2 { margin-top: 0; color: #004080; }
-label { display: block; margin-top: 10px; font-weight: bold; }
-input, textarea, select { width: 100%; padding: 8px; margin-top: 3px; border-radius: 5px; border: 1px solid #ccc; box-sizing: border-box; }
+body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f2f2f2; }
+.container { max-width:1200px; margin:0 auto; padding:20px; }
+button { padding:10px 15px; margin:5px; border:none; background:#004080; color:#fff; border-radius:5px; cursor:pointer; }
+button:hover { background:#003366; }
+.page { display:none; background:#fff; padding:20px; border-radius:8px; box-shadow:0 2px 5px rgba(0,0,0,0.1); }
+.page.active { display:block; }
+input, select, textarea { padding:8px; border-radius:5px; border:1px solid #ccc; margin-top:5px; width:100%; box-sizing:border-box; }
 textarea { resize: vertical; }
-button { margin-top: 10px; padding: 8px 12px; border: none; background-color: #004080; color: white; border-radius: 5px; cursor: pointer; }
-button:hover { background-color: #003366; }
+.patient-row { display:flex; gap:10px; margin-top:10px; }
+.patient-row > div { flex:1; }
 
-.drug-table { width: 100%; border-collapse: collapse; margin-top: 5px; }
-.drug-table th, .drug-table td { padding: 5px; text-align: left; }
+.drug-table { width:100%; border-collapse:collapse; margin-top:5px; }
+.drug-table th, .drug-table td { padding:5px; text-align:left; }
 
-.prescription {
-    width: 100%;
-    min-height: 29.7cm; /* A4 */
-    padding: 40px 60px;
-    background: #fff;
-    box-sizing: border-box;
-    color: #000;
-    line-height: 1.5;
-}
-.header { text-align: center; margin-bottom: 20px; }
-.header h3, .header h4 { margin: 2px 0; }
-.patient-info { margin-bottom: 20px; }
-.content { display: flex; gap: 20px; }
-.left { width: 33%; }
-.right { width: 67%; }
-.signature { text-align: right; margin-top: 80px; font-weight: bold; }
+.prescription { width:100%; min-height:29.7cm; padding:40px 60px; background:#fff; box-sizing:border-box; color:#000; line-height:1.5; }
+.header { text-align:center; margin-bottom:20px; }
+.header h3, .header h4 { margin:2px 0; }
+.patient-info { margin-bottom:20px; }
+.content { display:flex; gap:20px; border-top:2px solid #000; padding-top:20px; min-height:400px; }
+.left { width:33%; padding-right:10px; border-right:2px solid #000; }
+.right { width:67%; padding-left:10px; }
+.signature { text-align:right; margin-top:80px; font-weight:bold; }
 
-@media (max-width: 768px) { .container { flex-direction: column; } .content { flex-direction: column; } .left, .right { width: 100%; } }
+@media (max-width:768px){ .container{padding:10px;} .patient-row { flex-direction: column; } .content { flex-direction: column; } .left,.right{width:100%; border-right:none; padding:0;} }
 
-@media print {
-    body * { visibility: hidden; }
-    .prescription, .prescription * { visibility: visible; }
-    .prescription { width: 100%; height: 29.7cm; padding: 40px 60px; box-shadow: none; }
-    .form-container { display: none; }
-    .drug-table, .drug-table th, .drug-table td { border: none; padding: 0; }
+@media print{
+    body *{visibility:hidden;}
+    .prescription, .prescription *{visibility:visible;}
+    .prescription{width:100%; height:29.7cm; padding:40px 60px; box-shadow:none;}
+    .drug-table, .drug-table th, .drug-table td{border:none; padding:0;}
 }
 </style>
 </head>
 <body>
 
 <div class="container">
-    <!-- Form -->
-    <div class="form-container">
-        <h2>Prescription Maker</h2>
-        <label>Doctor Name & Credentials</label>
-        <input type="text" id="doctorName" placeholder="Dr. A B C, MBBS, FCPS" oninput="updatePreview()">
-        <label>Clinic / Hospital</label>
-        <input type="text" id="clinicName" placeholder="City Clinic" oninput="updatePreview()">
+    <!-- Navigation -->
+    <div>
+        <button onclick="showPage('homePage')">Home</button>
+        <button onclick="showPage('patientPage')">Patient Entry</button>
+        <button onclick="showPage('prescriptionPage')">Prescription Entry</button>
+    </div>
 
+    <!-- Page 1: Home -->
+    <div id="homePage" class="page active">
+        <h2>Welcome to Prescription App</h2>
+        <p>Use navigation buttons to enter patient details and create prescriptions.</p>
+    </div>
+
+    <!-- Page 2: Patient Entry -->
+    <div id="patientPage" class="page">
+        <h2>Patient Data Entry</h2>
         <label>Patient Name</label>
-        <input type="text" id="patientName" placeholder="Patient Name" oninput="updatePreview()">
+        <input type="text" id="patientName" placeholder="Full Name">
+
+        <div class="patient-row">
+            <div>
+                <label>Age</label>
+                <input type="number" id="patientAge" placeholder="Age">
+            </div>
+            <div>
+                <label>Gender</label>
+                <select id="patientGender">
+                    <option value="">Select Gender</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            <div>
+                <label>Weight (kg)</label>
+                <input type="number" id="patientWeight" placeholder="Weight">
+            </div>
+        </div>
+
         <label>Date of Birth</label>
-        <input type="date" id="dob" onchange="updatePreview()">
-        <label>Gender</label>
-        <select id="patientGender" onchange="updatePreview()">
-            <option value="">Select Gender</option>
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
-            <option value="Other">Other</option>
-        </select>
+        <input type="date" id="dob" onchange="calculateDOBAge()">
         <label>Date of Prescription</label>
-        <input type="date" id="prescriptionDate" onchange="updatePreview()">
+        <input type="date" id="prescriptionDate">
+
+        <button onclick="savePatientInfo()">Save Patient Info</button>
+        <div id="savedInfo" style="margin-top:20px; font-weight:bold;"></div>
+    </div>
+
+    <!-- Page 3: Prescription Entry -->
+    <div id="prescriptionPage" class="page">
+        <h2>Prescription Entry</h2>
+        <label>Doctor Name & Credentials</label>
+        <input type="text" id="doctorName" placeholder="Dr. A B C, MBBS, FCPS">
+        <label>Clinic / Hospital</label>
+        <input type="text" id="clinicName" placeholder="City Clinic">
 
         <label>Chief Complaints</label>
-        <textarea id="complaints" rows="2" oninput="updatePreview()"></textarea>
+        <textarea id="complaints" rows="2"></textarea>
         <label>On Examination</label>
-        <textarea id="examination" rows="2" oninput="updatePreview()"></textarea>
+        <textarea id="examination" rows="2"></textarea>
         <label>Investigations</label>
-        <textarea id="investigations" rows="2" oninput="updatePreview()"></textarea>
+        <textarea id="investigations" rows="2"></textarea>
         <label>Diagnosis</label>
-        <textarea id="diagnosis" rows="2" oninput="updatePreview()"></textarea>
+        <textarea id="diagnosis" rows="2"></textarea>
 
         <label>Drugs</label>
         <table class="drug-table" id="drugTable">
@@ -107,18 +114,15 @@ button:hover { background-color: #003366; }
                     <th>Dose</th>
                     <th>Times/Day</th>
                     <th>Duration</th>
-                    <th>Action</th>
                 </tr>
             </thead>
             <tbody></tbody>
         </table>
         <button type="button" onclick="addDrugRow()">+ Add Drug</button>
-        <button type="button" onclick="clearForm()">Clear Form</button>
+        <button type="button" onclick="updatePreview()">Update Preview</button>
         <button type="button" onclick="printPrescription()">Print Prescription</button>
-    </div>
 
-    <!-- Preview -->
-    <div class="preview-container">
+        <!-- Preview -->
         <div class="prescription" id="prescriptionPreview">
             <div class="header">
                 <h3 id="docNamePreview">Dr. Name, Credentials</h3>
@@ -127,14 +131,13 @@ button:hover { background-color: #003366; }
             <div class="patient-info">
                 <strong>Date:</strong> <span id="datePreview">--</span><br>
                 <strong>Patient:</strong> <span id="patientPreview">Name</span><br>
-                <strong>DOB / Age / Gender:</strong> <span id="dobAgeGenderPreview">--</span>
+                <strong>DOB / Age / Gender / Weight:</strong> <span id="dobAgeGenderWeightPreview">--</span>
             </div>
             <div class="content">
                 <div class="left">
                     <div><strong>Chief Complaints:</strong> <span id="complaintsPreview">--</span></div>
                     <div><strong>On Examination:</strong> <span id="examinationPreview">--</span></div>
                     <div><strong>Investigations:</strong> <span id="investigationsPreview">--</span></div>
-                    <div><strong>Diagnosis:</strong> <span id="diagnosisPreview">--</span></div>
                 </div>
                 <div class="right">
                     <div><strong>Prescription / Medicines:</strong>
@@ -148,78 +151,80 @@ button:hover { background-color: #003366; }
 </div>
 
 <script>
-// Set today's date
-document.getElementById('prescriptionDate').valueAsDate = new Date();
-
-function calculateAge(dob) {
-    if(!dob) return '--';
-    const birthDate = new Date(dob);
-    const today = new Date();
-    let age = today.getFullYear() - birthDate.getFullYear();
-    const m = today.getMonth() - birthDate.getMonth();
-    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age--;
-    return age;
+// Navigation
+function showPage(pageId){
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+    document.getElementById(pageId).classList.add('active');
 }
 
-function updatePreview() {
-    document.getElementById('docNamePreview').innerText = document.getElementById('doctorName').value || 'Dr. Name, Credentials';
-    document.getElementById('clinicPreview').innerText = document.getElementById('clinicName').value || 'Clinic / Hospital';
+// Patient Info
+function calculateDOBAge(){
+    const dob=document.getElementById('dob').value;
+    if(!dob) return;
+    const birth=new Date(dob);
+    const today=new Date();
+    let age=today.getFullYear()-birth.getFullYear();
+    const m=today.getMonth()-birth.getMonth();
+    if(m<0||(m===0&&today.getDate()<birth.getDate())) age--;
+    document.getElementById('patientAge').value=age;
+}
 
-    const patientName = document.getElementById('patientName').value || '--';
-    const dob = document.getElementById('dob').value;
-    const age = calculateAge(dob);
-    const gender = document.getElementById('patientGender').value || '--';
-    document.getElementById('patientPreview').innerText = patientName;
-    document.getElementById('dobAgeGenderPreview').innerText = `${dob || '--'} / ${age} yr / ${gender}`;
-    
-    const date = document.getElementById('prescriptionDate').value || '--';
-    document.getElementById('datePreview').innerText = date;
+function savePatientInfo(){
+    const name=document.getElementById('patientName').value||'--';
+    const age=document.getElementById('patientAge').value||'--';
+    const gender=document.getElementById('patientGender').value||'--';
+    const weight=document.getElementById('patientWeight').value||'--';
+    document.getElementById('savedInfo').innerText=`Saved: ${name} | Age: ${age} | Gender: ${gender} | Weight: ${weight}`;
+}
 
-    document.getElementById('complaintsPreview').innerText = document.getElementById('complaints').value || '--';
-    document.getElementById('examinationPreview').innerText = document.getElementById('examination').value || '--';
-    document.getElementById('investigationsPreview').innerText = document.getElementById('investigations').value || '--';
-    document.getElementById('diagnosisPreview').innerText = document.getElementById('diagnosis').value || '--';
+// Prescription
+document.getElementById('prescriptionDate').valueAsDate=new Date();
 
-    const drugsPreview = document.getElementById('drugsPreview');
-    drugsPreview.innerHTML = '';
-    document.querySelectorAll('#drugTable tbody tr').forEach(row => {
-        const cells = row.querySelectorAll('input');
-        if(cells[0].value.trim() !== ''){
-            const li = document.createElement('li');
-            li.innerText = `${cells[0].value} - ${cells[1].value || '-'} - ${cells[2].value || '-'} - ${cells[3].value || '-'}`;
+function updatePreview(){
+    document.getElementById('docNamePreview').innerText=document.getElementById('doctorName').value||'Dr. Name, Credentials';
+    document.getElementById('clinicPreview').innerText=document.getElementById('clinicName').value||'Clinic / Hospital';
+
+    const name=document.getElementById('patientName').value||'--';
+    const dob=document.getElementById('dob').value||'--';
+    const age=document.getElementById('patientAge').value||'--';
+    const gender=document.getElementById('patientGender').value||'--';
+    const weight=document.getElementById('patientWeight').value||'--';
+    document.getElementById('patientPreview').innerText=name;
+    document.getElementById('dobAgeGenderWeightPreview').innerText=`${dob} / ${age} yr / ${gender} / ${weight} kg`;
+
+    document.getElementById('datePreview').innerText=document.getElementById('prescriptionDate').value||'--';
+
+    document.getElementById('complaintsPreview').innerText=document.getElementById('complaints').value||'--';
+    document.getElementById('examinationPreview').innerText=document.getElementById('examination').value||'--';
+    document.getElementById('investigationsPreview').innerText=document.getElementById('investigations').value||'--';
+    document.getElementById('diagnosisPreview').innerText=document.getElementById('diagnosis').value||'--';
+
+    const drugsPreview=document.getElementById('drugsPreview');
+    drugsPreview.innerHTML='';
+    document.querySelectorAll('#drugTable tbody tr').forEach(row=>{
+        const cells=row.querySelectorAll('input');
+        if(cells[0].value.trim()!==''){
+            const li=document.createElement('li');
+            li.innerText=`${cells[0].value} - ${cells[1].value||'-'} - ${cells[2].value||'-'} - ${cells[3].value||'-'}`;
             drugsPreview.appendChild(li);
         }
     });
 }
 
-function addDrugRow() {
-    const tbody = document.querySelector('#drugTable tbody');
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
+function addDrugRow(){
+    const tbody=document.querySelector('#drugTable tbody');
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
         <td><input type="text" placeholder="Drug Name" oninput="updatePreview()"></td>
         <td><input type="text" placeholder="Dose" oninput="updatePreview()"></td>
         <td><input type="text" placeholder="Times/Day" oninput="updatePreview()"></td>
         <td><input type="text" placeholder="Duration" oninput="updatePreview()"></td>
-        <td><button type="button" onclick="removeDrug(this)">Remove</button></td>
     `;
     tbody.appendChild(tr);
 }
 
-function removeDrug(btn) {
-    btn.parentElement.parentElement.remove();
-    updatePreview();
-}
+function printPrescription(){ window.print(); }
 
-function clearForm() {
-    document.querySelectorAll('input, textarea, select').forEach(el => el.value = '');
-    document.querySelector('#drugTable tbody').innerHTML = '';
-    document.getElementById('prescriptionDate').valueAsDate = new Date();
-    updatePreview();
-}
-
-function printPrescription() { window.print(); }
-
-updatePreview();
 </script>
 
 </body>

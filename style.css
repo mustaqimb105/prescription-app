@@ -1,0 +1,122 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f4f6ff;
+}
+
+.container {
+    display: flex;
+    height: 100vh;
+}
+
+/* LEFT SIDE ENTRY */
+.entry-panel {
+    width: 40%;
+    padding: 20px;
+    background: #ffffff;
+    overflow-y: scroll;
+    border-right: 2px solid #d0d0d0;
+}
+
+.entry-panel h3 {
+    margin-top: 18px;
+    font-size: 18px;
+    color: #002060;
+}
+
+.entry-panel input,
+.entry-panel textarea {
+    width: 100%;
+    padding: 8px;
+    margin-top: 6px;
+    border: 1px solid #aaa;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.entry-panel textarea {
+    height: 80px;
+}
+
+/* Buttons */
+.clearBtn, .printBtn {
+    width: 48%;
+    padding: 10px;
+    border: none;
+    color: white;
+    font-size: 16px;
+    margin-top: 15px;
+    cursor: pointer;
+    border-radius: 8px;
+}
+
+.clearBtn {
+    background: #d9534f;
+}
+
+.printBtn {
+    background: #002060;
+}
+
+/* RIGHT SIDE PREVIEW */
+.preview-panel {
+    width: 60%;
+    padding: 30px;
+    background: white;
+    overflow-y: auto;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+}
+
+.header-right {
+    text-align: right;
+    color: #002060;
+}
+
+/* RX SECTION */
+.rx-title {
+    font-size: 24px;
+    margin-top: 15px;
+    color: #002060;
+    font-weight: bold;
+}
+
+.signature {
+    text-align: right;
+    margin-top: 80px;
+    color: #002060;
+    font-size: 14px;
+}
+
+/* PRINT MODE */
+@media print {
+
+    body {
+        background: white;
+    }
+
+    .entry-panel {
+        display: none;
+    }
+
+    .preview-panel {
+        width: 100%;
+        padding: 20px;
+    }
+}
+
+/* MOBILE VIEW */
+@media (max-width: 768px) {
+
+    .container {
+        display: block;
+    }
+
+    .entry-panel, .preview-panel {
+        width: 100%;
+        height: auto;
+    }
+}

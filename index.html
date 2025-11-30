@@ -6,11 +6,9 @@
 <title>Medicine Prescription Tool</title>
 
 <style>
-:root {
-    --bg:#ffffff; --text:#000000; --card-bg:#f5f7ff; --accent:#003d99;
-}
+:root {--bg:#ffffff; --text:#000000; --card-bg:#f5f7ff; --accent:#003d99;}
 body.dark{--bg:#0f141a;--text:#e6e6e6;--card-bg:#1c2530;--accent:#4d9aff;}
-body{margin:0;padding:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--text);transition:.3s ease;}
+body{margin:0;padding:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--text);transition:.3s;}
 header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;padding:15px 20px;background:var(--accent);color:white;}
 header h1{margin:5px 0;font-size:1.5rem;}
 .controls{display:flex;flex-wrap:wrap;gap:10px;padding:15px 20px;}
@@ -19,12 +17,10 @@ input,select{padding:10px;font-size:1rem;border-radius:8px;border:1px solid #999
 #results{flex:2;display:grid;gap:15px;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));}
 .card{background:var(--card-bg);padding:15px;border-radius:10px;border-left:5px solid var(--accent);box-shadow:0 2px 5px rgba(0,0,0,.1);}
 .card b{font-size:1.1rem;}
-.prescriptionPanel{flex:1;background:var(--card-bg);padding:15px;border-radius:10px;min-width:300px;max-width:400px;height:max-content;}
+.prescriptionPanel{flex:1;background:var(--card-bg);padding:15px;border-radius:10px;min-width:250px;max-width:400px;height:max-content;}
 .prescriptionPanel h2{text-align:center;margin-top:0;}
-.prescriptionPanel input, .prescriptionPanel textarea{width:100%;padding:8px;margin:5px 0;border-radius:6px;border:1px solid #999;}
-.prescriptionTable{width:100%;border-collapse:collapse;margin-top:10px;}
-.prescriptionTable th, .prescriptionTable td{border:1px solid #999;padding:6px;text-align:left;}
-.prescriptionTable th{background:var(--accent);color:white;}
+.prescriptionPanel input,.prescriptionPanel textarea{width:100%;padding:8px;margin:5px 0;border-radius:6px;border:1px solid #999;}
+.prescriptionList{margin-top:10px;list-style-type:disc;padding-left:20px;}
 button{padding:6px 12px;margin-top:6px;border:none;border-radius:6px;cursor:pointer;background:var(--accent);color:white;}
 button:hover{opacity:0.9;}
 .switch{position:relative;display:inline-block;width:45px;height:22px;}
@@ -62,10 +58,7 @@ input:checked + .slider:before{transform:translateX(22px);}
 <input type="text" id="patientName" placeholder="Patient Name">
 <input type="text" id="doctorName" placeholder="Doctor Name">
 <textarea id="notes" placeholder="Instructions / Notes"></textarea>
-<table class="prescriptionTable">
-<thead><tr><th>Medicine</th><th>Dosage</th><th>Frequency</th><th>Duration</th><th>Action</th></tr></thead>
-<tbody id="prescriptionBody"></tbody>
-</table>
+<ul id="prescriptionList" class="prescriptionList"></ul>
 <button onclick="printPrescription()">Print Prescription</button>
 </div>
 </div>
@@ -130,29 +123,19 @@ Price: ${m.Price||"N/A"}<br>
 
 // Prescription logic
 let prescriptionList=[];
-function addPrescription(medID){ if(prescriptionList.find(p=>p.ID===medID)) return; const med=medicines.find(m=>m.ID===medID); prescriptionList.push({ID:med.ID,Name:med.Name,Dosage:"",Frequency:"",Duration:""}); renderPrescription();}
-function renderPrescription(){
-const tbody=document.getElementById("prescriptionBody");
-tbody.innerHTML=prescriptionList.map((p,i)=>`<tr>
-<td>${p.Name}</td>
-<td><input type="text" value="${p.Dosage}" onchange="updatePrescription(${i},'Dosage',this.value)"></td>
-<td><input type="text" value="${p.Frequency}" onchange="updatePrescription(${i},'Frequency',this.value)"></td>
-<td><input type="text" value="${p.Duration}" onchange="updatePrescription(${i},'Duration',this.value)"></td>
-<td><button onclick="removePrescription(${i})">Remove</button></td>
-</tr>`).join('');
+function addPrescription(medID){ if(prescriptionList.find(p=>p.ID===medID)) return; const med=medicines.find(m=>m.ID===medID); prescriptionList.push(med.Name); renderPrescription();}
+function renderPrescription(){ 
+const ul=document.getElementById("prescriptionList");
+ul.innerHTML=prescriptionList.map(name=>`<li>${name}</li>`).join(''); 
 }
-function updatePrescription(index,field,value){ prescriptionList[index][field]=value; }
-function removePrescription(index){ prescriptionList.splice(index,1); renderPrescription(); }
 function printPrescription(){
 const patient=document.getElementById("patientName").value||"N/A";
 const doctor=document.getElementById("doctorName").value||"N/A";
 const notes=document.getElementById("notes").value||"";
 let content=`<h2 style="text-align:center;">Prescription</h2>
 <p><b>Patient:</b> ${patient}<br><b>Doctor:</b> ${doctor}</p>
-<table border="1" style="width:100%;border-collapse:collapse;">
-<tr><th>Medicine</th><th>Dosage</th><th>Frequency</th><th>Duration</th></tr>`;
-prescriptionList.forEach(p=>{content+=`<tr><td>${p.Name}</td><td>${p.Dosage}</td><td>${p.Frequency}</td><td>${p.Duration}</td></tr>`;});
-content+=`</table><p><b>Notes:</b> ${notes}</p>`;
+<ul>${prescriptionList.map(m=>`<li>${m}</li>`).join('')}</ul>
+<p><b>Notes:</b> ${notes}</p>`;
 const win=window.open("","PRINT","height=600,width=800"); win.document.write(`<html><head><title>Prescription</title></head><body>${content}</body></html>`); win.document.close(); win.focus(); win.print(); win.close();
 }
 
@@ -161,5 +144,3 @@ document.getElementById("themeSwitch").addEventListener("change",()=>{ document.
 </script>
 </body>
 </html>
-
-

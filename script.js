@@ -1,82 +1,113 @@
-let medicines = [];
+let medicines = [], generics = [], manufacturers = [], indications = [], drugClasses = [], dosageForms = [];
 
-// Load CSV from GitHub repo folder
-Papa.parse("data/medicines.csv", {
-    download: true,
-    header: true,
-    complete: function(results) {
-        medicines = results.data;
-        populateFilters();
-        displayResults(medicines);
-    }
+// Load all CSVs dynamically
+const files = [
+    {name: "generic", target: generics},
+    {name: "manufacturer", target: manufacturers},
+    {name: "indication", target: indications},
+    {name: "drug class", target: drugClasses},
+    {name: "dosage form", target: dosageForms},
+    {name: "medicine", target: medicines}
+];
+
+let loadCount = 0;
+
+files.forEach(file => {
+    Papa.parse(`data/${file.name}.csv`, {
+        download: true,
+        header: true,
+        complete: function(results){
+            file.target.push(...results.data);
+            loadCount++;
+            if(loadCount === files.length) initApp();
+        }
+    });
 });
 
-// Search
-document.getElementById("searchBox").addEventListener("input", () => {
-    filterData();
+// Initialize after all CSVs loaded
+function initApp(){
+    populateFilters();
+    displayResults(medicines);
+}
+
+// Mapping helpers
+function mapField(list, idField, nameField, value){
+    const item = list.find(x => x.ID === value);
+    return item ? item[nameField] : "N/A";
+}
+
+// Populate dropdown filters
+function populateFilters(){
+    populateSelect("filterGeneric", generics);
+    populateSelect("filterManufacturer", manufacturers);
+    populateSelect("filterDrugClass", drugClasses);
+    populateSelect("filterDosageForm", dosageForms);
+}
+
+function populateSelect(selectId, data){
+    const select = document.getElementById(selectId);
+    const sorted = [...new Set(data.map(d => d.Name).filter(Boolean))].sort();
+    sorted.forEach(v => select.innerHTML += `<option value="${v}">${v}</option>`);
+}
+
+// Search & filter events
+document.getElementById("searchBox").addEventListener("input", filterData);
+["filterGeneric","filterManufacturer","filterDrugClass","filterDosageForm"].forEach(id=>{
+    document.getElementById(id).addEventListener("change", filterData);
 });
 
-// Filters
-document.getElementById("filterGeneric").addEventListener("change", filterData);
-document.getElementById("filterCompany").addEventListener("change", filterData);
-
-// Filtering function
-function filterData() {
+function filterData(){
     const q = document.getElementById("searchBox").value.toLowerCase();
     const gen = document.getElementById("filterGeneric").value;
-    const comp = document.getElementById("filterCompany").value;
+    const man = document.getElementById("filterManufacturer").value;
+    const cls = document.getElementById("filterDrugClass").value;
+    const form = document.getElementById("filterDosageForm").value;
 
-    let filtered = medicines.filter(m =>
-        (m.Name?.toLowerCase().includes(q) ||
-         m.Generic?.toLowerCase().includes(q) ||
-         m.Company?.toLowerCase().includes(q)) &&
-        (gen === "" || m.Generic === gen) &&
-        (comp === "" || m.Company === comp)
-    );
+    const filtered = medicines.filter(m=>{
+        const medicineName = m.Name?.toLowerCase() || "";
+        const genericName = mapField(generics,"ID","Name",m.GenericID).toLowerCase();
+        const manufacturerName = mapField(manufacturers,"ID","Name",m.ManufacturerID).toLowerCase();
+        const drugClassName = mapField(drugClasses,"ID","Name",m.DrugClassID).toLowerCase();
+        const dosageFormName = mapField(dosageForms,"ID","Name",m.DosageFormID).toLowerCase();
+
+        return (medicineName.includes(q) || genericName.includes(q) || manufacturerName.includes(q))
+            && (gen === "" || genericName === gen.toLowerCase())
+            && (man === "" || manufacturerName === man.toLowerCase())
+            && (cls === "" || drugClassName === cls.toLowerCase())
+            && (form === "" || dosageFormName === form.toLowerCase());
+    });
 
     displayResults(filtered);
 }
 
-// Populate dropdowns
-function populateFilters() {
-    const genericSet = [...new Set(medicines.map(m => m.Generic).filter(Boolean))];
-    const companySet = [...new Set(medicines.map(m => m.Company).filter(Boolean))];
-
-    const genSelect = document.getElementById("filterGeneric");
-    const compSelect = document.getElementById("filterCompany");
-
-    genericSet.sort().forEach(g => {
-        genSelect.innerHTML += `<option value="${g}">${g}</option>`;
-    });
-
-    companySet.sort().forEach(c => {
-        compSelect.innerHTML += `<option value="${c}">${c}</option>`;
-    });
-}
-
-// Show data
-function displayResults(data) {
+// Display cards
+function displayResults(data){
     const div = document.getElementById("results");
+    if(!data.length){ div.innerHTML="<p>No results found.</p>"; return; }
 
-    if (!data.length) {
-        div.innerHTML = "<p>No results found.</p>";
-        return;
-    }
+    div.innerHTML = data.map(m=>{
+        const genericName = mapField(generics,"ID","Name",m.GenericID);
+        const manufacturerName = mapField(manufacturers,"ID","Name",m.ManufacturerID);
+        const drugClassName = mapField(drugClasses,"ID","Name",m.DrugClassID);
+        const dosageFormName = mapField(dosageForms,"ID","Name",m.DosageFormID);
+        const indicationName = mapField(indications,"ID","Name",m.IndicationID);
 
-    div.innerHTML = data.map(d => `
-        <div class="card">
-            <b>${d.Name || "Unknown Name"}</b><br>
-            Generic: ${d.Generic || "N/A"}<br>
-            Company: ${d.Company || "N/A"}<br>
-            Price: ${d.Price || "N/A"}
-        </div>
-    `).join('');
+        return `
+            <div class="card">
+                <b>${m.Name || "Unknown"}</b><br>
+                Generic: ${genericName}<br>
+                Manufacturer: ${manufacturerName}<br>
+                Drug Class: ${drugClassName}<br>
+                Dosage Form: ${dosageFormName}<br>
+                Indication: ${indicationName}<br>
+                Price: ${m.Price || "N/A"}
+            </div>
+        `;
+    }).join('');
 }
 
-/* Dark Mode Toggle */
-const themeSwitch = document.getElementById("themeSwitch");
-
-themeSwitch.addEventListener("change", () => {
+// Dark mode toggle
+document.getElementById("themeSwitch").addEventListener("change",()=>{
     document.body.classList.toggle("dark");
 });
 
